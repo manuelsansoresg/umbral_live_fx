@@ -12,7 +12,7 @@ export default function DashboardPage() {
     const preset = DEMO_GIFTS.find((gift) => gift.id === id);
     if (!preset) return;
     const chosen = resolvePreset(settings, id);
-    const event: SimulatedGift = { id: crypto.randomUUID(), name: preset.name, sender: sender.trim().slice(0, 40) || "Visitante", effect: chosen.effect, preset: chosen, timestamp: Date.now() };
+    const event: SimulatedGift = { id: crypto.randomUUID(), name: preset.name, sender: sender.trim().slice(0, 40) || "Visitante", effect: chosen.effect, preset: chosen, volume: settings.masterVolume, timestamp: Date.now() };
     broadcastGift(event);
     setLastGift(event);
     setCount((previous) => previous + 1);
