@@ -20,6 +20,8 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [x] Configuración general: exportar/importar presets y restablecer preferencias locales.
 - [x] Overlay sin indicador de espera mediante parámetro status=0.
 - [x] Primer puente de pruebas con Server-Sent Events (SSE) para fuentes de navegador en OBS, mismo proceso Node persistente y canal por UUID.
+- [x] Recuperación de eventos con consulta periódica, buffer en memoria de 60 s y diagnóstico de entrega en /live (corrección para fallo de overlay reportado el 2026-10-29).
+- [ ] Validar en OBS que la URL del canal coincide y que tanto animación como audio regresaron.
 - [ ] Validar visualmente y comprobar audio en OBS y TikTok LIVE Studio en equipos reales; no es una integración certificada.
 - [ ] Infraestructura de relay para despliegue distribuido (Redis/pubsub) y autenticación por usuario/canal.
 - [x] Cola de vista previa en memoria con reproducción secuencial y límite de 25 eventos simulados.
@@ -96,3 +98,11 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - Pulsar «Escuchar sonido de este efecto» en el editor; debe oírse un sonido espectral de ~3 segundos, no tres pitidos.
 - Reproducir el regalo hacia OBS desde el panel y verificar el medidor de la fuente «umbral».
 - Si la fuente recibe eventos pero sigue muda, abrir temporalmente su URL con `&debug=1` y usar «Activar y probar sonido» mediante Interactuar en OBS. El overlay normal continúa limpio.
+
+### Recuperación después de pérdida total de animación/audio
+1. Reiniciar Next.js y recargar `/live`.
+2. Copiar nuevamente la URL completa del overlay de `/live` y reemplazar la fuente `umbral` de OBS (puede haber quedado un canal UUID anterior).
+3. Refrescar la fuente en OBS y ejecutar un regalo de prueba desde `/live`.
+4. Leer el nuevo diagnóstico bajo «Mesa de pruebas»: distingue error HTTP, ningún overlay conectado por SSE o múltiples conexiones.
+5. Si SSE no funciona, el overlay consulta `/api/live/poll` periódicamente para recuperar mensajes hasta 60 s después.
+6. Si continúa sin animación, probar `/overlay?debug=1` en Safari y verificar el estado del relay; solo entonces revisar los logs del servidor.
