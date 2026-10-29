@@ -37,6 +37,10 @@ const presets: EffectPreset[] = [
   { id: "bloodmoon", name: "Luna de sangre", effect: "bloodmoon", theme: "terror", color: "#dc2626", duration: 5, scale: 100, position: "center", showText: true, message: "LA LUNA DESPIERTA", sound: false },
   { id: "apparition", name: "Aparición espectral", effect: "apparition", theme: "terror", color: "#e5e7eb", duration: 5, scale: 100, position: "center", showText: true, message: "ALGUIEN NOS OBSERVA", sound: false },
   { id: "glitch", name: "Interferencia paranormal", effect: "glitch", theme: "terror", color: "#f87171", duration: 4, scale: 100, position: "center", showText: true, message: "SEÑAL INTERVENIDA", sound: false },
+  { id: "abyss-portal", name: "Portal del abismo", effect: "portal", theme: "terror", color: "#dc2626", duration: 7, scale: 100, position: "center", showText: true, message: "EL UMBRAL SE HA ABIERTO", sound: false },
+  { id: "cemetery-fog", name: "Niebla del cementerio", effect: "fog", theme: "terror", color: "#8893a1", duration: 6, scale: 100, position: "center", showText: true, message: "ALGO SE MUEVE EN LA NIEBLA", sound: false },
+  { id: "blood-rain", name: "Lluvia de sangre", effect: "blood", theme: "terror", color: "#b91c1c", duration: 6, scale: 100, position: "center", showText: true, message: "LA OSCURIDAD RECLAMA SU OFRENDA", sound: false },
+  { id: "spectral-visitor", name: "Visitante espectral", effect: "spectral", theme: "terror", color: "#b8d5e0", duration: 7, scale: 100, position: "center", showText: true, message: "NO ESTÁS SOLO", sound: false },
   { id: "neon", name: "Impacto neón", effect: "glitch", theme: "gamer", color: "#22d3ee", duration: 4, scale: 100, position: "center", showText: true, message: "POWER UP", sound: false },
   { id: "portal", name: "Portal mágico", effect: "bloodmoon", theme: "fantasy", color: "#a78bfa", duration: 5, scale: 100, position: "center", showText: true, message: "UN PORTAL SE ABRE", sound: false },
   { id: "gold", name: "Destellos dorados", effect: "embers", theme: "premium", color: "#fbbf24", duration: 5, scale: 100, position: "center", showText: true, message: "GRACIAS POR TU REGALO", sound: false },
@@ -52,7 +56,9 @@ export function readSettings(): FxSettings {
     if (!raw) return defaultSettings;
     const value: Partial<FxSettings> = JSON.parse(raw);
     if (!Array.isArray(value.presets) || !value.presets.length) return defaultSettings;
-    return { ...defaultSettings, ...value, presets: value.presets.filter((p) => typeof p.id === "string" && typeof p.name === "string"), assignments: value.assignments || {} };
+    const existing = value.presets.filter((p) => typeof p.id === "string" && typeof p.name === "string");
+    const ids = new Set(existing.map((p) => p.id));
+    return { ...defaultSettings, ...value, presets: [...existing, ...defaultSettings.presets.filter((p) => !ids.has(p.id))], assignments: value.assignments || {} };
   } catch { return defaultSettings; }
 }
 export function writeSettings(value: FxSettings) {
