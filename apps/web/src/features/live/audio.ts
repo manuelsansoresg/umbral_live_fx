@@ -5,6 +5,7 @@ import type { GiftEffect } from "@/features/live/simulator";
 type AudioContextClass = typeof AudioContext;
 let context: AudioContext | null = null;
 let currentNodes: OscillatorNode[] = [];
+let activeAudio: HTMLAudioElement | null = null;
 const clamp = (n: number) => Math.min(1, Math.max(0, n));
 
 function getContext(): AudioContext | null {
@@ -22,6 +23,7 @@ export async function unlockAudio(): Promise<boolean> {
 }
 
 export function stopEffectSound() {
+  if (activeAudio) { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio = null; }
   for (const oscillator of currentNodes) {
     try { oscillator.stop(); } catch { /* Already stopped */ }
     try { oscillator.disconnect(); } catch { /* Already disconnected */ }
@@ -97,4 +99,23 @@ export function playAudioTest(volume = 65): boolean {
   oscillator.start(now);
   oscillator.stop(now + 0.7);
   return true;
+}
+
+/** Returns a promise so browser autoplay or file errors can be reported accurately. */
+export async function playUploadedSound(url: string, volume: number): Promise<boolean> {
+  if (typeof window === "undefined" || !/^\/api\/audio\/[a-f0-9-]{36}\.(mp3|wav|ogg)$/.test(url) || volume <= 0) return false;
+  stopEffectSound();
+  const player = new Audio(url);
+  activeAudio = player;
+  player.preload = "auto";
+  player.volume = clamp(volume / 100);
+  player.addEventListener("ended", () => { if (activeAudio === player) activeAudio = null; }, { once: true });
+  try {
+    await player.play();
+    return true;
+  } catch (error) {
+    console.warn("Umbral FX: unable to play uploaded sound", error);
+    if (activeAudio === player) activeAudio = null;
+    return false;
+  }
 }
