@@ -17,6 +17,8 @@ Actualizado: 2026-10-28. Estado marcado por funcionalidad real, no solamente por
 - [x] Ajustes de resolución y modo de visualización.
 - [x] Acceso directo y copia de URL del overlay.
 - [x] Controles de pruebas locales y estado honesto de la conexión.
+- [x] Configuración general: exportar/importar presets y restablecer preferencias locales.
+- [x] Overlay sin indicador de espera mediante parámetro status=0.
 - [ ] Compatibilidad real con fuentes de navegador OBS/TikTok LIVE Studio (el actual BroadcastChannel no alcanza el motor embebido de OBS).
 - [ ] Cola persistente de efectos, prioridades, límite de eventos y rate limiting.
 - [ ] Audio sincronizado, volumen general y por preset.
