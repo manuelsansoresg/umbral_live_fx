@@ -44,10 +44,10 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
     resize();
 
     const render = () => {
-      const t = reduced ? 1.7 : (performance.now() - started) / 1000;
+      const t = compact || reduced ? 2.15 : (performance.now() - started) / 1000;
       const duration = Math.max(2, Math.min(12, preset.duration));
-      const intro = reduced ? 1 : Math.min(1, t / 0.85);
-      const outro = reduced ? 1 : Math.min(1, Math.max(0, (duration - t) / 0.9));
+      const intro = compact || reduced ? 1 : Math.min(1, t / 0.85);
+      const outro = compact || reduced ? 1 : Math.min(1, Math.max(0, (duration - t) / 0.9));
       const envelope = Math.max(0, Math.min(intro, outro));
       ctx.clearRect(0, 0, width, height);
       const centerX = width / 2;
@@ -171,17 +171,20 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       }
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "source-over";
-      if (!reduced) { frame++; raf = requestAnimationFrame(render); }
+      if (!reduced && !compact) { frame++; raf = requestAnimationFrame(render); }
     };
     render();
     return () => { cancelAnimationFrame(raf); observer.disconnect(); };
   }, [preset.effect, preset.color, preset.duration, compact]);
 
-  const isSpectral = preset.effect === "spectral" || preset.effect === "apparition" || preset.effect === "fog";
+
   return <div className={`fx-stage fx-${preset.effect} ${compact ? "fx-compact" : ""}`} style={{ "--fx-color": preset.color, "--fx-scale": clamp(preset.scale, 50, 150) / 100 } as React.CSSProperties}>
+    <div className="fx-atmosphere" aria-hidden="true" /><div className="fx-scene-backdrop" aria-hidden="true" />
     <canvas ref={canvasRef} className="fx-canvas" aria-hidden="true" />
     <div className="fx-light" aria-hidden="true" />
     {preset.effect === "portal" && <div className="fx-portal-core" aria-hidden="true" />}
+    {preset.effect === "bloodmoon" && <div className="fx-moon" aria-hidden="true"><span /></div>}
+    {preset.effect === "embers" && <div className="fx-ember-storm" aria-hidden="true"><span/><span/><span/><span/><span/></div>}
     {(preset.effect === "apparition" || preset.effect === "spectral") ? <div className="fx-ghost" aria-hidden="true">
       <svg viewBox="0 0 300 390" width="100%" height="100%" role="presentation">
         <defs>
@@ -203,12 +206,39 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
         <path d="M150 240C139 269 170 277 152 300" stroke="#fff" strokeOpacity=".18" fill="none" strokeWidth="10"/>
       </svg>
     </div> : preset.effect === "fog" ? <div className="fx-fog-presence" aria-hidden="true"><span/><span/><span/></div> :
-    <div className="fx-figure" aria-hidden="true">{glyphs[preset.effect]}</div>}
+    (preset.effect === "glitch" ? <div className="fx-signal" aria-hidden="true"><span>NO SIGNAL</span><i/><i/><i/></div> : preset.effect === "blood" ? <div className="fx-blood-mark" aria-hidden="true"><span/><span/><span/></div> : <div className="fx-figure" aria-hidden="true">{glyphs[preset.effect]}</div>)}
     {preset.effect === "portal" && <div className="fx-portal-inner" aria-hidden="true" />}
     {preset.effect === "blood" && <div className="fx-blood-vignette" aria-hidden="true" />}
-    {preset.effect === "glitch" && <div className="fx-glitch-echo" aria-hidden="true">{glyphs.glitch}</div>}
+    {preset.effect === "glitch" && <div className="fx-glitch-echo" aria-hidden="true">SIGNAL LOST</div>}
     {preset.showText && <div className="fx-caption"><p className="fx-message">{preset.message}</p><p className="fx-sender">{sender}</p><p className="fx-gift">ha enviado <strong>{giftName}</strong></p></div>}
     <style jsx>{`
+      /* The editor/gallery uses a fixed hero frame; its thumbnail must not fade to black at animation end. */
+      .fx-atmosphere{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 43%,color-mix(in srgb,var(--fx-color) 17%,transparent),transparent 60%);pointer-events:none}
+      .fx-scene-backdrop{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 40%,transparent 18%,#05050944 64%,#020204aa 100%)}
+      .fx-compact{transform:none!important}
+      .fx-compact .fx-ghost{animation:none!important;opacity:.94!important;filter:drop-shadow(0 0 14px #bcdfff)!important;transform:translateY(-4px) scale(1.06)!important}
+      .fx-compact .fx-fog-presence{animation:none!important;opacity:.85!important;filter:blur(12px)!important}
+      .fx-compact .fx-caption{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}
+      .fx-compact .fx-light{animation:none!important;opacity:.25!important;transform:scale(1.08)!important}
+      .fx-compact .fx-portal-core,.fx-compact .fx-portal-inner{animation:none!important}
+      .fx-compact .fx-figure{animation:none!important;opacity:1}
+      .fx-moon{position:absolute;top:12%;left:50%;z-index:2;width:min(34%,280px);aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 33% 27%,#f4a3a3 0%,#c74452 19%,#931625 48%,#38060f 80%,#15040a 100%);box-shadow:0 0 42px #cb222966,0 0 95px #c12b322f,inset -19px -12px 35px #200209;border:1px solid #f8a5a542}
+      .fx-moon:before{content:"";position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 27% 37%,#15020849 0 9%,transparent 11%),radial-gradient(circle at 67% 61%,#1d050a48 0 12%,transparent 15%),radial-gradient(circle at 51% 27%,#2b041054 0 7%,transparent 9%);mix-blend-mode:multiply}
+      .fx-moon span{position:absolute;inset:-12%;border:1px solid #d7424339;border-radius:50%;box-shadow:0 0 25px #c82e3d55}
+      .fx-bloodmoon .fx-figure{display:none}
+      .fx-ember-storm{position:absolute;inset:0;z-index:2;pointer-events:none}
+      .fx-ember-storm span{position:absolute;left:var(--x);bottom:var(--y);width:var(--s);height:var(--s);background:#ffb16c;border-radius:40%;box-shadow:0 0 14px 3px #ff4d1a82;transform:rotate(35deg);animation:embersAscend 3s ease-in-out infinite alternate}
+      .fx-ember-storm span:nth-child(1){--x:30%;--y:24%;--s:7px}.fx-ember-storm span:nth-child(2){--x:57%;--y:36%;--s:4px;animation-delay:-1s}.fx-ember-storm span:nth-child(3){--x:67%;--y:18%;--s:8px;animation-delay:-1.7s}.fx-ember-storm span:nth-child(4){--x:42%;--y:63%;--s:3px;animation-delay:-2s}.fx-ember-storm span:nth-child(5){--x:75%;--y:54%;--s:5px;animation-delay:-.5s}
+      .fx-embers .fx-figure{display:none}
+      .fx-signal{position:absolute;top:23%;left:50%;transform:translateX(-50%);z-index:2;width:68%;border:1px solid #ff556b5e;background:repeating-linear-gradient(0deg,#14101b 0 3px,#0b0d13 3px 6px);padding:14px 3px;font-size:clamp(13px,3vw,25px);font-weight:900;letter-spacing:.25em;text-shadow:2px 0 #20d6f3,-2px 0 #fb3567;box-shadow:0 0 35px #d22c4440;animation:signalJolt 3s steps(2,end) infinite}
+      .fx-signal i{display:block;width:100%;height:2px;background:#ff3a6c55;margin-top:5px}
+      .fx-glitch-echo{font-size:clamp(11px,2vw,21px)!important;letter-spacing:.12em;top:18%!important}
+      .fx-blood-mark{position:absolute;top:9%;left:28%;width:44%;height:65%;z-index:2;border-radius:47% 32% 52% 40%;transform:rotate(-12deg);background:radial-gradient(ellipse at 40% 26%,#fa475c88,#b20915bc 47%,#3600069c 78%,transparent 82%);filter:drop-shadow(0 0 13px #b3070b4d);clip-path:polygon(2% 16%,25% 4%,59% 0,89% 16%,100% 45%,82% 72%,86% 100%,63% 84%,44% 97%,28% 78%,5% 86%,14% 52%)}
+      .fx-blood-mark span{position:absolute;background:#78030b;border-radius:50%;width:10%;height:19%;top:58%;left:19%;box-shadow:28px 8px #8d0610,55px -5px #af0e1a}
+      .fx-blood .fx-figure{display:none}
+      @keyframes embersAscend{from{transform:translateY(16px) rotate(20deg);opacity:.45}to{transform:translateY(-34px) rotate(65deg);opacity:1}}
+      @keyframes signalJolt{0%,90%,100%{filter:none}92%{filter:brightness(1.8);transform:translateX(calc(-50% + 5px))}95%{transform:translateX(calc(-50% - 5px))}}
+      @media(prefers-reduced-motion:reduce){.fx-signal,.fx-ember-storm span{animation:none!important}}
       .fx-stage{position:relative;width:100%;height:100%;min-height:180px;overflow:hidden;isolation:isolate;transform:scale(var(--fx-scale));display:grid;place-items:center;color:var(--fx-color);text-align:center;contain:layout paint}
       .fx-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
       .fx-light{position:absolute;z-index:0;width:67%;aspect-ratio:1;border-radius:100%;background:radial-gradient(circle,var(--fx-color),transparent 70%);opacity:.17;filter:blur(46px);animation:breath 3.4s ease-in-out infinite alternate}
