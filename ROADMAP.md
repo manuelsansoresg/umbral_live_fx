@@ -33,7 +33,10 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [ ] Confirmar en OBS que cada preset guardado tiene sonido habilitado y que se escucha desde la fuente de navegador.
 - [x] Corregido el volumen enviado por cada regalo: OBS recibe el nivel del panel aunque tenga almacenamiento local diferente.
 - [x] Tonos graves reajustados a frecuencias audibles dentro del motor Web Audio previamente funcional.
-- [ ] Validación de audio dentro de fuentes OBS/TikTok LIVE Studio y volumen independiente por preset.
+- [x] Volumen individual por preset y selección de archivo propio MP3/WAV/OGG, servido por Next.js para OBS.
+- [x] Subida local de audios hasta 5 MB, detección de firmas y directorio fuera del repositorio.
+- [ ] Validar reproducción de archivos personalizados en OBS en equipo real.
+- [ ] Autenticación, permisos por usuario, cuota de almacenamiento y almacenamiento S3 antes de habilitar subidas públicas.
 
 ## Etapa 2 — Animaciones de calidad comercial
 - [x] Primer motor reutilizable Canvas + CSS con capas, animaciones responsivas y partículas.
@@ -115,3 +118,13 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 3. Actualizar el servidor y refrescar la fuente Navegador en OBS.
 4. Probar Fantasma, Corona, Rosa y Corazón desde el dashboard. El volumen ahora viaja dentro del evento y los tonos ya no dependen de subgraves.
 5. Si un efecto sigue sin sonar, usar `/overlay?debug=1` con el mismo parámetro `channel` para distinguir entre bloqueo de Web Audio y preset sin sonido.
+
+## Audio personalizado: primera versión local
+- Ve a `/animations`, selecciona Fantasma (u otro preset) y en «Audio personalizado» sube un archivo MP3/WAV/OGG de hasta 5 MB.
+- Usa «Escuchar seleccionado» para verificarlo desde Safari. Ajusta «Volumen de este efecto» y comprueba que la casilla «Sonido sintetizado en este efecto» (ahora interruptor general de audio del preset) esté marcada.
+- Entra a `/live` y emite un regalo de prueba hacia la fuente de navegador de OBS. La URL personalizada viaja con el evento.
+- Los archivos se guardan en `.umbral-audio/` dentro del directorio de ejecución de Next.js, excluido de Git, o en `UMBRAL_AUDIO_DIR` si se configura.
+- La carga está restringida a localhost + mismo origen. **No expongas la ruta de subida a Internet sin autenticación.**
+- Los archivos no están incluidos en la exportación JSON de configuración. Haz una copia aparte de la carpeta si reinstalas o cambias de servidor.
+- El endpoint de descarga utiliza IDs UUID difíciles de adivinar, pero todavía no aplica autorización por usuario; esta opción es solo para el MVP local.
+- El audio del overlay puede ser bloqueado por la política de autoplay de OBS. Conserva el modo `&debug=1` para pruebas manuales.
