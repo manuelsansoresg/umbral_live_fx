@@ -8,6 +8,7 @@ export type SimulatedGift = {
   effect: GiftEffect;
   timestamp: number;
   preset?: EffectPreset;
+  volume?: number;
 };
 export const LIVE_CHANNEL = "umbral-live-fx-preview-v1";
 export const DEMO_GIFTS: { id: string; name: string; effect: GiftEffect; symbol: string; description: string }[] = [
@@ -59,5 +60,6 @@ export function isSimulatedGift(value: unknown): value is SimulatedGift {
   const candidate = value as Partial<SimulatedGift>;
   return typeof candidate.id === "string" && typeof candidate.name === "string" &&
     typeof candidate.sender === "string" && typeof candidate.timestamp === "number" &&
-    ["apparition", "bloodmoon", "embers", "glitch", "portal", "fog", "blood", "spectral"].includes(candidate.effect ?? "");
+    ["apparition", "bloodmoon", "embers", "glitch", "portal", "fog", "blood", "spectral"].includes(candidate.effect ?? "") &&
+    (candidate.volume === undefined || (typeof candidate.volume === "number" && Number.isFinite(candidate.volume) && candidate.volume >= 0 && candidate.volume <= 100));
 }
