@@ -23,6 +23,7 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [x] Cola de vista previa en memoria con reproducción secuencial y límite de 25 eventos simulados.
 - [ ] Cola persistente de efectos, prioridades por regalo, deduplicación y rate limiting de producción.
 - [x] Sonidos sintetizados originales por efecto, interruptor individual y volumen general; audio sincronizado con la cola local.
+- [x] Botón de prueba audible y diagnósticos en overlay y editor; incremento de ganancia en sonidos sintetizados.
 - [ ] Validación de audio dentro de fuentes OBS/TikTok LIVE Studio y volumen independiente por preset.
 
 ## Etapa 2 — Animaciones de calidad comercial
@@ -68,3 +69,9 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 6. Comprobar movimiento reducido del sistema operativo.
 
 Notas: No existe todavía sonido garantizado en OBS ni control de audio en un dispositivo remoto. Los sonidos se generan con osciladores Web Audio y no usan archivos de terceros.
+
+### Diagnóstico de audio
+- Abrir /overlay y pulsar **Activar y probar sonido**: deben oírse tres notas, independiente de los presets.
+- Si se oyen las notas pero no el efecto, revisar **Sonido sintetizado en este efecto** en /animations y volumen general > 0.
+- Si las notas tampoco suenan, comprobar que la pestaña/sitio/dispositivo no están silenciados; la autorización Web Audio es específica de cada pestaña.
+- La compilación aún debe verificarse localmente; no hubo acceso de red al repositorio desde el entorno de ejecución.
