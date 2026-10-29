@@ -6,7 +6,7 @@ import type { EffectPreset } from "@/features/live/settings";
 type Props = { preset: EffectPreset; sender?: string; giftName?: string; compact?: boolean };
 const glyphs: Record<EffectPreset["effect"], string> = {
   apparition: "♱", bloodmoon: "◉", embers: "✦", glitch: "♛",
-  portal: "◎", fog: "☽", blood: "♦", spectral: "♱",
+  portal: "◎", fog: "☽", blood: "♦", spectral: "♱", wraith: "✦",
 };
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 
@@ -57,7 +57,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       ctx.globalAlpha = envelope;
 
       // Atmospheric volumes: layered noise-free translucent gradients, drawn at different depths.
-      const mist = preset.effect === "fog" || preset.effect === "spectral" || preset.effect === "apparition" || preset.effect === "portal";
+      const mist = preset.effect === "fog" || preset.effect === "spectral" || preset.effect === "apparition" || preset.effect === "portal" || preset.effect === "wraith";
       if (mist) {
         const bands = compact ? 9 : 18;
         for (let i = 0; i < bands; i++) {
@@ -73,6 +73,44 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
           ctx.fillStyle = fog;
           ctx.fillRect(x - r, y - r, r * 2, r * 2);
         }
+      }
+
+      if (preset.effect === "wraith") {
+        // An overhead shaft, drifting ash and cold vapor: independent of the standard ghost.
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        const shaft = ctx.createLinearGradient(centerX, 0, centerX, height * 0.84);
+        shaft.addColorStop(0, "#e2f5ff28");
+        shaft.addColorStop(0.48, "#b5dcff16");
+        shaft.addColorStop(1, "#a7cfff00");
+        ctx.globalAlpha = envelope * (compact ? 0.95 : 0.7);
+        ctx.fillStyle = shaft;
+        ctx.beginPath();
+        ctx.moveTo(centerX - width * 0.045, 0);
+        ctx.lineTo(centerX + width * 0.045, 0);
+        ctx.lineTo(centerX + width * 0.24, height * 0.85);
+        ctx.lineTo(centerX - width * 0.24, height * 0.85);
+        ctx.closePath();
+        ctx.fill();
+        const aura = ctx.createRadialGradient(centerX, centerY * 0.8, 4, centerX, centerY, radius * 1.7);
+        aura.addColorStop(0, "#d9f4ff36");
+        aura.addColorStop(0.42, "#b3e3ff17");
+        aura.addColorStop(1, "#97cfff00");
+        ctx.globalAlpha = envelope * 0.9;
+        ctx.fillStyle = aura;
+        ctx.fillRect(centerX - radius * 1.7, centerY - radius * 1.7, radius * 3.4, radius * 3.4);
+        for (let i = 0; i < (compact ? 22 : 58); i++) {
+          const angle = i * 2.39996 + (reduced ? 0 : t * 0.15);
+          const reach = radius * (0.24 + ((i * 13) % 31) / 25);
+          const px = centerX + Math.cos(angle) * reach;
+          const py = centerY + Math.sin(angle * 1.25) * reach * 1.3;
+          ctx.beginPath();
+          ctx.arc(px, py, i % 7 === 0 ? 1.65 : 0.8, 0, Math.PI * 2);
+          ctx.fillStyle = i % 5 === 0 ? "#ffffff" : "#bcdfff";
+          ctx.globalAlpha = envelope * (0.18 + (i % 4) * 0.13);
+          ctx.fill();
+        }
+        ctx.restore();
       }
 
       if (preset.effect === "portal" || preset.effect === "bloodmoon") {
@@ -185,6 +223,34 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
     {preset.effect === "portal" && <div className="fx-portal-core" aria-hidden="true" />}
     {preset.effect === "bloodmoon" && <div className="fx-moon" aria-hidden="true"><span /></div>}
     {preset.effect === "embers" && <div className="fx-ember-storm" aria-hidden="true"><span/><span/><span/><span/><span/></div>}
+    {preset.effect === "wraith" && <div className="fx-wraith" aria-hidden="true">
+      <div className="fx-wraith-halo" />
+      <svg className="fx-wraith-art" viewBox="0 0 320 430" width="100%" height="100%" role="presentation">
+        <defs>
+          <radialGradient id="umbral-wraith-core" cx="50%" cy="26%" r="78%">
+            <stop offset="0%" stopColor="#fbfeff" stopOpacity=".91"/>
+            <stop offset="31%" stopColor="#e3f5ff" stopOpacity=".65"/>
+            <stop offset="70%" stopColor="#9acde8" stopOpacity=".23"/>
+            <stop offset="100%" stopColor="#6497ba" stopOpacity="0"/>
+          </radialGradient>
+          <linearGradient id="umbral-wraith-trail" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#e9f9ff" stopOpacity=".48"/>
+            <stop offset="65%" stopColor="#b8dff4" stopOpacity=".14"/>
+            <stop offset="100%" stopColor="#94c2db" stopOpacity="0"/>
+          </linearGradient>
+          <filter id="umbral-wraith-soft"><feGaussianBlur stdDeviation="12"/></filter>
+        </defs>
+        <ellipse cx="160" cy="171" rx="91" ry="134" fill="#d9f4ff4a" filter="url(#umbral-wraith-soft)"/>
+        <path d="M160 35C110 30 84 69 77 122C70 178 55 221 24 281C10 315 33 337 55 325C77 315 86 328 94 345C109 369 126 322 143 345C157 365 173 357 187 332C203 308 220 357 237 333C249 315 276 317 285 294C306 263 279 220 258 178C243 142 250 88 217 59C202 45 183 35 160 35Z" fill="url(#umbral-wraith-trail)" filter="url(#umbral-wraith-soft)"/>
+        <path d="M161 49C120 43 98 84 92 134C87 180 76 221 55 273C44 300 64 304 84 294C102 284 113 303 118 320C130 350 145 314 158 323C172 335 183 342 196 313C208 287 228 331 240 307C255 278 265 294 271 277C281 255 260 224 250 189C239 152 242 104 214 75C200 57 184 50 161 49Z" fill="url(#umbral-wraith-core)"/>
+        <path d="M102 135Q118 116 138 144Q137 171 116 170Q99 165 102 135Z" fill="#09111c" opacity=".83"/>
+        <path d="M166 143Q181 115 197 138Q204 166 183 170Q163 167 166 143Z" fill="#09111c" opacity=".83"/>
+        <path d="M151 187Q165 179 172 195Q171 217 158 225Q145 218 151 187Z" fill="#07111a" opacity=".69"/>
+        <path d="M109 220C128 261 98 314 120 346M165 230C149 281 192 307 175 351M210 224C183 266 228 307 205 346" stroke="#ebf9ff" strokeOpacity=".2" strokeWidth="13" strokeLinecap="round" fill="none"/>
+        <path d="M116 96Q160 77 199 99" stroke="#ffffff" strokeOpacity=".26" strokeWidth="3" fill="none"/>
+      </svg>
+      <div className="fx-wraith-shroud" />
+    </div>}
     {(preset.effect === "apparition" || preset.effect === "spectral") ? <div className="fx-ghost" aria-hidden="true">
       <svg viewBox="0 0 300 390" width="100%" height="100%" role="presentation">
         <defs>
@@ -241,6 +307,19 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       @keyframes embersAscend{from{transform:translateY(16px) rotate(20deg);opacity:.45}to{transform:translateY(-34px) rotate(65deg);opacity:1}}
       @keyframes signalJolt{0%,90%,100%{filter:none}92%{filter:brightness(1.8);transform:translateX(calc(-50% + 5px))}95%{transform:translateX(calc(-50% - 5px))}}
       @media(prefers-reduced-motion:reduce){.fx-signal,.fx-ember-storm span{animation:none!important}}
+      .fx-wraith{position:absolute;z-index:4;top:0;left:50%;width:min(60%,410px);height:74%;pointer-events:none;transform:translateX(-50%);animation:wraithRise var(--fx-duration) ease-in-out both}
+      .fx-wraith-halo{position:absolute;inset:13% 0 6%;background:radial-gradient(ellipse,#c7ecff55 0%,#9ccdf225 35%,transparent 70%);filter:blur(25px)}
+      .fx-wraith-art{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 22px #badfffa0)}
+      .fx-wraith-shroud{position:absolute;inset:30% -8% -3%;background:linear-gradient(to bottom,transparent 10%,#c5ebff14 35%,transparent 80%);filter:blur(26px);animation:wraithBreath 3.2s ease-in-out infinite alternate}
+      .fx-wraith .fx-wraith-art{animation:wraithFloat 4.2s ease-in-out infinite alternate}
+      .fx-compact .fx-wraith{width:47%;height:73%;animation:none!important;transform:translateX(-50%)!important;opacity:1!important;filter:none!important}
+      .fx-compact .fx-wraith-art,.fx-compact .fx-wraith-shroud{animation:none!important}
+      .fx-wraith .fx-wraith-shroud{border-radius:50%}
+      .fx-wraith + .fx-caption{z-index:6}
+      @keyframes wraithRise{0%{opacity:0;filter:blur(22px);transform:translate(-50%,50px) scale(.82)}18%{opacity:.48;filter:blur(12px);transform:translate(-50%,24px) scale(.92)}43%{opacity:.96;filter:blur(1px);transform:translate(-50%,-3px) scale(1)}68%{opacity:1;filter:blur(0);transform:translate(-50%,-10px) scale(1.04)}100%{opacity:0;filter:blur(19px);transform:translate(-50%,-40px) scale(1.09)}}
+      @keyframes wraithFloat{from{transform:translateY(-8px)}to{transform:translateY(11px)}}
+      @keyframes wraithBreath{from{opacity:.3;transform:scale(.9)}to{opacity:.8;transform:scale(1.13)}}
+      @media(prefers-reduced-motion:reduce){.fx-wraith,.fx-wraith-art,.fx-wraith-shroud{animation:none!important;opacity:1!important;filter:none!important;transform:translateX(-50%)!important}.fx-wraith-art,.fx-wraith-shroud{transform:none!important}}
       .fx-stage{position:relative;width:100%;height:100%;min-height:180px;overflow:hidden;isolation:isolate;transform:scale(var(--fx-scale));display:grid;place-items:center;color:var(--fx-color);text-align:center;contain:layout paint}
       .fx-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
       .fx-light{position:absolute;z-index:0;width:67%;aspect-ratio:1;border-radius:100%;background:radial-gradient(circle,var(--fx-color),transparent 70%);opacity:.17;filter:blur(46px);animation:breath 3.4s ease-in-out infinite alternate}
