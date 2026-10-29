@@ -111,6 +111,20 @@ export function PremiumWraithMotion({ compact = false, duration, onAssetStatus }
       hand.globalCompositeOperation = "source-over";
       if (!compact && !reduced) ctx.drawImage(handLayer, 0, 0);
 
+      // Eye highlights pulse independently from the source photograph.
+      const glow = compact || reduced ? 0.32 : 0.24 + 0.2 * Math.pow((Math.sin(seconds * 4.5) + 1) / 2, 3);
+      for (const [eyeX, eyeY] of [[805, 116], [881, 125]] as const) {
+        const x = eyeX * S, y = eyeY * S;
+        const halo = ctx.createRadialGradient(x, y, 0, x, y, 15 * S);
+        halo.addColorStop(0, `rgba(219,246,255,${glow})`);
+        halo.addColorStop(0.28, `rgba(155,215,255,${glow * 0.48})`);
+        halo.addColorStop(1, "rgba(100,190,255,0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(x, y, 15 * S, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
       if (!reduced && !compact && seconds < Math.max(2, duration)) raf = requestAnimationFrame(paint);
     };
 
