@@ -22,6 +22,12 @@ export function broadcastGift(gift: SimulatedGift): void {
   channel.postMessage(gift);
   channel.close();
 }
+export function stopPreview(): void {
+  if (typeof window === "undefined" || !("BroadcastChannel" in window)) return;
+  const channel = new BroadcastChannel(LIVE_CHANNEL);
+  channel.postMessage({ type: "stop-preview" });
+  channel.close();
+}
 export function isSimulatedGift(value: unknown): value is SimulatedGift {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<SimulatedGift>;
