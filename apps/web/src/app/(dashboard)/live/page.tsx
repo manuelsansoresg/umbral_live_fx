@@ -35,7 +35,7 @@ export default function LivePage() {
     if(!options.enabled)return;
     const gift = DEMO_GIFTS[count % DEMO_GIFTS.length];
     const preset = resolvePreset(settings,gift.id);
-    const result = await broadcastGift({id:crypto.randomUUID(),name:gift.name,sender:"UmbralCreepy",effect:preset.effect,preset,timestamp:Date.now()});
+    const result = await broadcastGift({id:crypto.randomUUID(),name:gift.name,sender:"UmbralCreepy",effect:preset.effect,preset,volume:settings.masterVolume,timestamp:Date.now()});
     setRelayResult("error" in result ? `Error: ${result.error}` : result.connected > 0 ? `Enviado. ${result.connected} overlay(s) conectados al canal.` : "Enviado al servidor, pero no hay overlays conectados por SSE. Revisa la URL en OBS; también puede funcionar la recuperación por consulta.");
     setCount(n=>n+1);
   }
