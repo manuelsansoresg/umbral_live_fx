@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand: var(--brand-primary);
+  --color-background: var(--brand-black);
+  --color-foreground: var(--brand-white);
+  --color-secondary: var(--brand-gray);
+  --font-sans: "Montserrat", Arial, Helvetica, sans-serif;
+  --font-display: "Another Danger", "Montserrat", Arial, sans-serif;
+}
+
+html,
+body {
+  min-height: 100%;
+  background: transparent;
+}
+
+body {
+  margin: 0;
+  color: var(--brand-white);
+  font-family: var(--font-sans);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--brand-white);
+  outline-offset: 5px;
+}
+
+::selection {
+  color: var(--brand-white);
+  background: var(--brand-primary);
+}
