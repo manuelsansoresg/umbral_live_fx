@@ -6,7 +6,9 @@ import { readSettings, resolvePreset } from "@/features/live/settings";
 export default function OverlayPage() {
   const [gift, setGift] = useState<SimulatedGift | null>(null);
   const [ready, setReady] = useState(false);
+  const [showStatus, setShowStatus] = useState(true);
   useEffect(() => {
+    setShowStatus(new URLSearchParams(window.location.search).get("status") !== "0");
     if (!("BroadcastChannel" in window)) return;
     const channel = new BroadcastChannel(LIVE_CHANNEL);
     let timeout: ReturnType<typeof setTimeout> | undefined;
@@ -25,7 +27,7 @@ export default function OverlayPage() {
   const preset = gift?.preset;
   const symbol = gift?.effect === "bloodmoon" ? "◉" : gift?.effect === "apparition" ? "♱" : gift?.effect === "glitch" ? "♛" : "✦";
   return <main className="pointer-events-none relative flex min-h-dvh items-center justify-center overflow-hidden bg-transparent" aria-label="Overlay transparente de Umbral LIVE FX">
-    {!gift && <p className="absolute bottom-5 left-5 rounded-md bg-black/60 px-3 py-2 text-xs text-white/70">{ready ? "Overlay listo · esperando regalo simulado" : "El navegador no admite BroadcastChannel"}</p>}
+    {!gift && showStatus && <p className="absolute bottom-5 left-5 rounded-md bg-black/60 px-3 py-2 text-xs text-white/70">{ready ? "Overlay listo · esperando regalo simulado" : "El navegador no admite BroadcastChannel"}</p>}
     {gift && <div key={gift.id} role="status" aria-live="polite" className={`effect ${gift.effect}`} style={{ "--fx-color": preset?.color || "#dc2626", "--fx-size": (preset?.scale || 100) / 100, "--fx-time": `${preset?.duration || 5}s`, alignSelf: preset?.position === "top" ? "flex-start" : preset?.position === "bottom" ? "flex-end" : "center" } as React.CSSProperties}>
       <div className="aura" />
       <div className="particles" aria-hidden="true">{Array.from({ length: 18 }, (_, i) => <span key={i} style={{ left: `${(i * 37) % 96}%`, top: `${(i * 23) % 86}%`, animationDelay: `${i * 70}ms` }}>✦</span>)}</div>
