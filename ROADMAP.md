@@ -159,3 +159,10 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - [x] Respaldo automático SVG cuando no existe el archivo PNG, para evitar romper el overlay o el simulador.
 - [ ] **Instalar asset binario** `apps/web/public/images/fx/umbral-premium-wraith.png` desde paquete proporcionado al usuario (el conector GitHub solo permitió actualizar archivos de texto en esta sesión).
 - [ ] Probar compilación, rendimiento de la imagen y transparencia en OBS antes de considerarlo terminado.
+
+### Diagnóstico de imagen premium tras subida del PNG
+- [x] Verificado archivo real `apps/web/public/images/fx/umbral-premium-wraith.png` en `main` (1,101,319 bytes, PNG RGBA 1440×527, blob `279134725e2823f9c8147a53faa316568f26d58a`).
+- [x] Eliminado el bloqueo permanente del recurso después de un primer error HTTP; el componente ahora reintenta al montar de nuevo.
+- [x] Bust de caché del PNG y sustitución de selector CSS `:has` por clase controlada por estado.
+- [x] Diagnóstico visible en /animations: comprobación de respuesta del propio Next.js y enlace al recurso servido.
+- [ ] Usuario debe sincronizar los cambios GitHub con su checkout local/deploy y refrescar fuente OBS; comprobar que el enlace al PNG responde desde el mismo origen y que el efecto lo muestra.
