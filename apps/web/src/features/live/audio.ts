@@ -35,14 +35,14 @@ export function playEffectSound(effect: GiftEffect, volume: number): boolean {
   stopEffectSound();
   const now = ctx.currentTime;
   const notes: Record<GiftEffect, [number, number, number, OscillatorType][]> = {
-    portal: [[65, 110, 1.3, "sawtooth"], [130, 62, 1.7, "sine"]],
-    bloodmoon: [[82, 54, 1.5, "triangle"], [41, 65, 1.8, "sine"]],
-    fog: [[74, 56, 2, "sine"], [98, 71, 1.8, "triangle"]],
-    apparition: [[420, 150, 1.2, "sine"], [106, 56, 1.5, "triangle"]],
-    spectral: [[365, 112, 1.7, "sine"], [530, 175, 1.3, "sine"]],
-    blood: [[110, 37, 1.1, "sawtooth"], [52, 46, 1.4, "triangle"]],
-    embers: [[180, 70, .9, "triangle"], [280, 90, .7, "sine"]],
-    glitch: [[230, 75, .22, "square"], [150, 410, .16, "sawtooth"], [340, 92, .27, "square"]],
+    portal: [[240, 480, 1.8, "sawtooth"], [350, 220, 2.2, "sine"]],
+    bloodmoon: [[310, 170, 2.1, "triangle"], [440, 250, 1.8, "sine"]],
+    fog: [[340, 190, 2.5, "triangle"], [480, 330, 2.2, "sine"]],
+    apparition: [[620, 210, 2.3, "sine"], [380, 520, 2.4, "triangle"]],
+    spectral: [[540, 240, 2.5, "sine"], [410, 610, 2.2, "triangle"]],
+    blood: [[380, 160, 1.6, "sawtooth"], [290, 210, 1.8, "triangle"]],
+    embers: [[530, 270, 1.6, "triangle"], [720, 390, 1.4, "sine"]],
+    glitch: [[580, 320, .3, "square"], [760, 440, .28, "sawtooth"], [900, 510, .32, "square"]],
   };
   try {
     notes[effect].forEach(([start, end, duration, type], index) => {
@@ -55,7 +55,7 @@ export function playEffectSound(effect: GiftEffect, volume: number): boolean {
       oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, end), begin + duration);
       lowpass.type = "lowpass";
       lowpass.frequency.value = 1800;
-      const gain = Math.min(0.24, clamp(volume / 100) * 0.28) / Math.sqrt(notes[effect].length);
+      const gain = Math.min(0.22, clamp(volume / 100) * 0.22) / Math.sqrt(notes[effect].length);
       envelope.gain.setValueAtTime(0.0001, begin);
       envelope.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), begin + 0.04);
       envelope.gain.exponentialRampToValueAtTime(0.0001, begin + duration);
