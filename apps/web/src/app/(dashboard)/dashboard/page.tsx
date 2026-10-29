@@ -1,15 +1,18 @@
 "use client";
 import { useState } from "react";
 import { broadcastGift, DEMO_GIFTS, type SimulatedGift } from "@/features/live/simulator";
+import { resolvePreset, useFxSettings } from "@/features/live/settings";
 
 export default function DashboardPage() {
+  const [settings] = useFxSettings();
   const [sender, setSender] = useState("Visitante de las sombras");
   const [lastGift, setLastGift] = useState<SimulatedGift | null>(null);
   const [count, setCount] = useState(0);
   function simulate(id: string) {
     const preset = DEMO_GIFTS.find((gift) => gift.id === id);
     if (!preset) return;
-    const event: SimulatedGift = { id: crypto.randomUUID(), name: preset.name, sender: sender.trim().slice(0, 40) || "Visitante", effect: preset.effect, timestamp: Date.now() };
+    const chosen = resolvePreset(settings, id);
+    const event: SimulatedGift = { id: crypto.randomUUID(), name: preset.name, sender: sender.trim().slice(0, 40) || "Visitante", effect: chosen.effect, preset: chosen, timestamp: Date.now() };
     broadcastGift(event);
     setLastGift(event);
     setCount((previous) => previous + 1);
@@ -26,7 +29,7 @@ export default function DashboardPage() {
       <div className="rounded-2xl border border-white/10 bg-white/5 p-6"><p className="text-xs uppercase tracking-widest text-white/50">Vista de efectos</p><a href="/overlay" target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-red-600 bg-red-700/20 px-4 text-sm font-semibold transition hover:bg-red-700/40">Abrir overlay ↗</a><p className="mt-2 text-xs text-white/50">Ábrelo antes de probar regalos</p></div>
     </div>
     <section className="space-y-5">
-      <div><h2 className="text-2xl font-bold">Simulador de regalos</h2><p className="mt-1 text-sm text-white/50">Selecciona el regalo que quieres probar.</p></div>
+      <div><h2 className="text-2xl font-bold">Simulador de regalos</h2><p className="mt-1 text-sm text-white/50">Selecciona el regalo que quieres probar. La animación depende de la configuración de Regalos.</p></div>
       <label className="block max-w-md text-sm text-white/70">Nombre del espectador
         <input value={sender} onChange={(e) => setSender(e.target.value)} maxLength={40} className="mt-2 block w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none focus:border-red-500" />
       </label>
