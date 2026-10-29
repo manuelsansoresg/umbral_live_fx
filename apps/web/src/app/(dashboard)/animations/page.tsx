@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { themes, useFxSettings, type EffectPreset, type FxTheme } from "@/features/live/settings";
 import { broadcastGift, stopPreview } from "@/features/live/simulator";
 import { CinematicEffect } from "@/components/fx/cinematic-effect";
-import { playAudioTest, playEffectSound, unlockAudio, stopEffectSound } from "@/features/live/audio";
+import { playAudioTest, playEffectSound, playUploadedSound, unlockAudio, stopEffectSound } from "@/features/live/audio";
 
 
 export default function AnimationsPage() {
@@ -13,11 +13,33 @@ export default function AnimationsPage() {
   const [selectedId, select] = useState("embers");
   const [preview, setPreview] = useState(0);
   const [notice, setNotice] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   const selected = settings.presets.find(p => p.id === selectedId) || settings.presets[0];
   const filtered = useMemo(() => settings.presets.filter(p => filter === "all" || p.theme === filter), [settings.presets, filter]);
   const patch = (values: Partial<EffectPreset>) => save({ ...settings, presets: settings.presets.map(p => p.id === selected.id ? { ...p, ...values } : p) });
+  const playPreset = async (preset: EffectPreset) => {
+    const volume = Math.round(settings.masterVolume * (preset.soundVolume ?? 100) / 100);
+    if (!preset.sound || volume <= 0) return false;
+    if (preset.soundUrl) return await playUploadedSound(preset.soundUrl, volume);
+    return await unlockAudio() && playEffectSound(preset.effect, volume);
+  };
+  const uploadAudio = async (file?: File) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { setNotice("Máximo 5 MB por audio."); return; }
+    setUploading(true); setNotice("Subiendo audio...");
+    try {
+      const form = new FormData(); form.set("file", file);
+      const response = await fetch("/api/audio/upload", { method: "POST", body: form });
+      const data: { url?: string; error?: string } = await response.json();
+      if (!response.ok || !data.url) throw new Error(data.error || "No se pudo subir.");
+      patch({ soundUrl: data.url, sound: true });
+      setNotice("Audio guardado en el servidor y asignado a este efecto.");
+    } catch (error) { setNotice(error instanceof Error ? error.message : "Error al subir audio."); }
+    finally { setUploading(false); if (fileInput.current) fileInput.current.value = ""; }
+  };
   const test = async (preset: EffectPreset) => {
-    if (preset.sound && await unlockAudio()) playEffectSound(preset.effect, settings.masterVolume);
+    if (preset.sound) await playPreset(preset);
     select(preset.id); setPreview(v => v + 1);
     broadcastGift({ id: crypto.randomUUID(), name: "Regalo de prueba", sender: "UmbralCreepy", effect: preset.effect, timestamp: Date.now(), preset, volume: settings.masterVolume });
   };
@@ -62,9 +84,21 @@ export default function AnimationsPage() {
         <label className="block text-xs text-white/70">Tamaño: {selected.scale}%<input className="mt-2 w-full accent-red-600" type="range" min="50" max="150" step="5" value={selected.scale} onChange={e=>patch({scale:Number(e.target.value)})}/></label>
         <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.showText} onChange={e=>patch({showText:e.target.checked})} className="accent-red-600"/> Mostrar texto</label>
         <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.sound} onChange={e=>patch({sound:e.target.checked})} className="accent-red-600"/> Sonido sintetizado en este efecto</label>
+        <div className="space-y-3 rounded-xl border border-red-900/40 bg-black/30 p-4">
+          <p className="text-sm font-bold text-white">Audio personalizado</p>
+          <p className="text-xs text-white/50">{selected.soundUrl ? "Archivo propio asignado. Puedes reemplazarlo o volver al sonido original." : "Actualmente usa el sonido sintetizado. Puedes sustituirlo por tu propio audio."}</p>
+          <input ref={fileInput} type="file" accept=".mp3,.wav,.ogg,audio/mpeg,audio/wav,audio/ogg" onChange={e=>void uploadAudio(e.target.files?.[0])} className="block w-full text-xs text-white/70 file:mr-3 file:rounded-lg file:border-0 file:bg-red-900/60 file:px-3 file:py-2 file:text-white" disabled={uploading} aria-label="Subir sonido MP3 WAV u OGG" />
+          {selected.soundUrl && <p className="break-all text-[11px] text-white/40">{selected.soundUrl}</p>}
+          <label className="block text-xs text-white/70">Volumen de este efecto: {selected.soundVolume ?? 100}%<input type="range" min="0" max="100" step="5" className="mt-2 w-full accent-red-600" value={selected.soundVolume ?? 100} onChange={e=>patch({soundVolume:Number(e.target.value)})}/></label>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={async()=>setNotice(await playPreset(selected)?"Sonido enviado para reproducción.":"No se pudo iniciar el audio; comprueba permiso y volumen.")} className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold hover:bg-white/10">▶ Escuchar seleccionado</button>
+            {selected.soundUrl && <button type="button" onClick={()=>{stopEffectSound();patch({soundUrl:undefined});setNotice("Volviste al sonido original.");}} className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold hover:bg-white/10">Volver al original</button>}
+          </div>
+          <p className="text-[11px] leading-5 text-white/40">MP3, WAV u OGG · máximo 5 MB · subida local. Para OBS usa el mismo servidor Next.js, accesible desde su fuente de navegador.</p>
+        </div>
         <label className="block text-xs text-white/70">Volumen general: {settings.masterVolume}%<input className="mt-2 w-full accent-red-600" type="range" min="0" max="100" step="5" value={settings.masterVolume} onChange={e=>save({...settings,masterVolume:Number(e.target.value)})}/></label>
         <p className="text-xs text-white/40">Si configuraste efectos antes de añadir audio, revisa que la casilla de sonido esté marcada. El overlay tiene su propio botón de prueba.</p>
-        <button type="button" onClick={async()=>{const ok=await unlockAudio();const played=ok && playEffectSound(selected.effect, Math.max(settings.masterVolume, 40));setNotice(played?`Sonido «${selected.name}» enviado. Escúchalo durante unos segundos.`:"El navegador bloqueó Web Audio.");}} className="w-full rounded-lg border border-red-600/50 px-3 py-3 text-sm font-semibold text-red-200 hover:bg-red-950/40">♫ Escuchar sonido de este efecto</button>
+        <button type="button" onClick={async()=>{const ok=await unlockAudio();const played=selected.soundUrl ? await playUploadedSound(selected.soundUrl, Math.max(settings.masterVolume, 40)) : (ok && playEffectSound(selected.effect, Math.max(settings.masterVolume, 40)));setNotice(played?`Sonido «${selected.name}» enviado. Escúchalo durante unos segundos.`:"El navegador bloqueó Web Audio.");}} className="w-full rounded-lg border border-red-600/50 px-3 py-3 text-sm font-semibold text-red-200 hover:bg-red-950/40">♫ Escuchar sonido de este efecto</button>
         <button type="button" onClick={async()=>{const ok=await unlockAudio();const test=ok && playAudioTest(80);setNotice(test?"Se enviaron tres tonos de prueba.":"El navegador bloqueó Web Audio.");}} className="w-full rounded-lg border border-white/20 px-3 py-3 text-sm font-semibold hover:bg-white/10">Probar audio de este navegador</button>
         <div className="grid grid-cols-2 gap-2"><button onClick={()=>test(selected)} className="rounded-lg bg-red-700 px-3 py-3 text-sm font-bold hover:bg-red-600">▶ Reproducir</button><button onClick={()=>{stopPreview();stopEffectSound();setPreview(v=>v+1);setNotice("Se detuvo el efecto del overlay.");}} className="rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">■ Detener</button></div>
         <button onClick={duplicate} className="w-full rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">Duplicar efecto</button><button onClick={()=>{save({...settings,defaultEffectId:selected.id});setNotice("Efecto predeterminado actualizado.");}} className="w-full rounded-lg border border-red-600/50 px-3 py-3 text-sm font-semibold text-red-300 hover:bg-red-950/30">Usar como predeterminado</button>
