@@ -42,6 +42,7 @@ export function playEffectSound(effect: GiftEffect, volume: number): boolean {
     fog: [[340, 190, 2.5, "triangle"], [480, 330, 2.2, "sine"]],
     apparition: [[620, 210, 2.3, "sine"], [380, 520, 2.4, "triangle"]],
     spectral: [[540, 240, 2.5, "sine"], [410, 610, 2.2, "triangle"]],
+    wraith: [[470, 190, 2.7, "sine"], [350, 520, 2.9, "triangle"]],
     blood: [[380, 160, 1.6, "sawtooth"], [290, 210, 1.8, "triangle"]],
     embers: [[530, 270, 1.6, "triangle"], [720, 390, 1.4, "sine"]],
     glitch: [[580, 320, .3, "square"], [760, 440, .28, "sawtooth"], [900, 510, .32, "square"]],
