@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { PremiumWraithMotion } from "@/components/fx/premium-wraith-motion";
 import type { EffectPreset } from "@/features/live/settings";
 
 type Props = { preset: EffectPreset; sender?: string; giftName?: string; compact?: boolean };
@@ -13,6 +14,7 @@ const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(mi
 export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "Regalo de prueba", compact = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [premiumArtLoaded, setPremiumArtLoaded] = useState(false);
+  const onPremiumAssetStatus = useCallback((loaded: boolean) => setPremiumArtLoaded(loaded), []);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -226,7 +228,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
     {preset.effect === "embers" && <div className="fx-ember-storm" aria-hidden="true"><span/><span/><span/><span/><span/></div>}
     {preset.effect === "wraith" && <div className={`fx-wraith ${premiumArtLoaded ? "fx-wraith-photo-mode" : ""}`} aria-hidden="true">
       <div className="fx-wraith-halo" />
-      <img className="fx-wraith-photo" src="/images/fx/umbral-premium-wraith.png?v=2" alt="" draggable={false} style={{ opacity: premiumArtLoaded ? 1 : 0 }} onLoad={(event) => setPremiumArtLoaded(event.currentTarget.naturalWidth > 0)} onError={() => setPremiumArtLoaded(false)} />
+      <PremiumWraithMotion compact={compact} duration={preset.duration} onAssetStatus={onPremiumAssetStatus} />
       {!premiumArtLoaded && <svg className="fx-wraith-art" viewBox="0 0 320 430" width="100%" height="100%" role="presentation">
         <defs>
           <radialGradient id="umbral-wraith-core" cx="50%" cy="26%" r="78%">
@@ -312,9 +314,10 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       .fx-wraith{position:absolute;z-index:4;top:0;left:50%;width:min(60%,410px);height:74%;pointer-events:none;transform:translateX(-50%);animation:wraithRise var(--fx-duration) ease-in-out both}
       .fx-wraith-photo{position:absolute;z-index:2;left:50%;top:1%;width:140%;max-width:none;height:auto;transform:translateX(-50%);object-fit:contain;filter:drop-shadow(0 0 18px #a2d8f155) contrast(1.09);user-select:none;pointer-events:none;animation:wraithPhotoFloat 4.8s ease-in-out infinite alternate}
       .fx-compact .fx-wraith-photo{width:165%;top:-6%;animation:none!important}
-      .fx-wraith-photo-mode{width:min(84%,650px);height:76%}
-      .fx-compact .fx-wraith-photo-mode{width:83%;height:86%}
+      .fx-wraith-photo-mode{width:min(110%,900px);height:83%}
+      .fx-compact .fx-wraith-photo-mode{width:94%;height:86%}
       @keyframes wraithPhotoFloat{from{transform:translate(-50%,-9px) scale(.99)}to{transform:translate(-50%,9px) scale(1.04)}}
+      .fx-wraith-photo-mode .fx-wraith-art{display:none}
       .fx-wraith-halo{position:absolute;inset:13% 0 6%;background:radial-gradient(ellipse,#c7ecff55 0%,#9ccdf225 35%,transparent 70%);filter:blur(25px)}
       .fx-wraith-art{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 22px #badfffa0)}
       .fx-wraith-shroud{position:absolute;inset:30% -8% -3%;background:linear-gradient(to bottom,transparent 10%,#c5ebff14 35%,transparent 80%);filter:blur(26px);animation:wraithBreath 3.2s ease-in-out infinite alternate}
