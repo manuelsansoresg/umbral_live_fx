@@ -54,8 +54,8 @@ export function playEffectSound(effect: GiftEffect, volume: number): boolean {
       oscillator.frequency.setValueAtTime(start, begin);
       oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, end), begin + duration);
       lowpass.type = "lowpass";
-      lowpass.frequency.value = 850;
-      const gain = Math.min(0.14, clamp(volume / 100) * 0.12) / notes[effect].length;
+      lowpass.frequency.value = 1800;
+      const gain = Math.min(0.24, clamp(volume / 100) * 0.28) / Math.sqrt(notes[effect].length);
       envelope.gain.setValueAtTime(0.0001, begin);
       envelope.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), begin + 0.04);
       envelope.gain.exponentialRampToValueAtTime(0.0001, begin + duration);
@@ -72,4 +72,29 @@ export function playEffectSound(effect: GiftEffect, volume: number): boolean {
     });
     return true;
   } catch { stopEffectSound(); return false; }
+}
+
+/** Audible diagnostic tone, independent of the selected gift's sound switch. */
+export function playAudioTest(volume = 65): boolean {
+  const ctx = getContext();
+  if (!ctx || ctx.state !== "running") return false;
+  stopEffectSound();
+  const oscillator = ctx.createOscillator();
+  const envelope = ctx.createGain();
+  const now = ctx.currentTime;
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(440, now);
+  oscillator.frequency.setValueAtTime(660, now + 0.2);
+  oscillator.frequency.setValueAtTime(880, now + 0.4);
+  envelope.gain.setValueAtTime(0.0001, now);
+  envelope.gain.exponentialRampToValueAtTime(Math.max(0.001, clamp(volume / 100) * 0.25), now + 0.03);
+  envelope.gain.setValueAtTime(Math.max(0.001, clamp(volume / 100) * 0.25), now + 0.48);
+  envelope.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
+  oscillator.connect(envelope);
+  envelope.connect(ctx.destination);
+  oscillator.onended = () => { oscillator.disconnect(); envelope.disconnect(); currentNodes = currentNodes.filter(n => n !== oscillator); };
+  currentNodes.push(oscillator);
+  oscillator.start(now);
+  oscillator.stop(now + 0.7);
+  return true;
 }
