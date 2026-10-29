@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { themes, useFxSettings, type EffectPreset, type FxTheme } from "@/features/live/settings";
-import { broadcastGift } from "@/features/live/simulator";
+import { broadcastGift, stopPreview } from "@/features/live/simulator";
 
 const symbols = { apparition: "♱", bloodmoon: "◉", embers: "✦", glitch: "♛" };
 export default function AnimationsPage() {
@@ -62,8 +62,8 @@ export default function AnimationsPage() {
         <label className="block text-xs text-white/70">Tamaño: {selected.scale}%<input className="mt-2 w-full accent-red-600" type="range" min="50" max="150" step="5" value={selected.scale} onChange={e=>patch({scale:Number(e.target.value)})}/></label>
         <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.showText} onChange={e=>patch({showText:e.target.checked})} className="accent-red-600"/> Mostrar texto</label>
         <p className="text-xs text-white/40">Sonidos: próximamente, cuando añadamos recursos de audio con licencia. No se reproduce audio todavía.</p>
-        <div className="grid grid-cols-2 gap-2"><button onClick={()=>test(selected)} className="rounded-lg bg-red-700 px-3 py-3 text-sm font-bold hover:bg-red-600">▶ Reproducir</button><button onClick={duplicate} className="rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">Duplicar</button></div>
-        <button onClick={()=>{save({...settings,defaultEffectId:selected.id});setNotice("Efecto predeterminado actualizado.");}} className="w-full rounded-lg border border-red-600/50 px-3 py-3 text-sm font-semibold text-red-300 hover:bg-red-950/30">Usar como predeterminado</button>
+        <div className="grid grid-cols-2 gap-2"><button onClick={()=>test(selected)} className="rounded-lg bg-red-700 px-3 py-3 text-sm font-bold hover:bg-red-600">▶ Reproducir</button><button onClick={()=>{stopPreview();setPreview(v=>v+1);setNotice("Se detuvo el efecto del overlay.");}} className="rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">■ Detener</button></div>
+        <button onClick={duplicate} className="w-full rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">Duplicar efecto</button><button onClick={()=>{save({...settings,defaultEffectId:selected.id});setNotice("Efecto predeterminado actualizado.");}} className="w-full rounded-lg border border-red-600/50 px-3 py-3 text-sm font-semibold text-red-300 hover:bg-red-950/30">Usar como predeterminado</button>
         {notice && <p role="status" className="text-xs text-green-400">{notice}</p>}
         <p className="text-xs leading-5 text-white/40">La vista previa integrada es simplificada. Para observar el efecto completo, abre el overlay en otra pestaña del mismo navegador.</p>
         <a href="/overlay" target="_blank" rel="noopener noreferrer" className="block text-center text-sm text-red-400 underline underline-offset-4">Abrir overlay ↗</a>
