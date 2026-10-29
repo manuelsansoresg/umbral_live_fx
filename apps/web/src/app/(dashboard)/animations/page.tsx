@@ -3,8 +3,9 @@
 import { useMemo, useState } from "react";
 import { themes, useFxSettings, type EffectPreset, type FxTheme } from "@/features/live/settings";
 import { broadcastGift, stopPreview } from "@/features/live/simulator";
+import { CinematicEffect } from "@/components/fx/cinematic-effect";
 
-const symbols = { apparition: "♱", bloodmoon: "◉", embers: "✦", glitch: "♛" };
+
 export default function AnimationsPage() {
   const [settings, save, loaded] = useFxSettings();
   const [filter, setFilter] = useState<"all" | FxTheme>("all");
@@ -36,9 +37,8 @@ export default function AnimationsPage() {
     <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_350px]">
       <section aria-label="Efectos disponibles" className="grid content-start gap-4 sm:grid-cols-2">
         {filtered.map(p => <button key={p.id} type="button" onClick={()=>{select(p.id);setNotice("");}} className={`overflow-hidden rounded-2xl border text-left transition hover:-translate-y-1 ${selected.id===p.id?"border-red-500/80 bg-red-950/20":"border-white/10 bg-white/[.03] hover:border-white/30"}`}>
-          <div className="relative flex h-44 items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_center,#301015_0%,#09090c_70%)]">
-            <div className="absolute h-28 w-28 rounded-full blur-3xl opacity-30" style={{background:p.color}}/>
-            <span aria-hidden className="relative text-7xl" style={{color:p.color,textShadow:`0 0 40px ${p.color}`}}>{symbols[p.effect]}</span>
+          <div className="relative h-44 overflow-hidden bg-[#060609]">
+            <CinematicEffect preset={{...p,scale:75,showText:false}} compact />
             <span className="absolute bottom-3 left-4 text-[10px] font-semibold uppercase tracking-[.2em] text-white/50">{p.theme}</span>
           </div>
           <div className="flex items-center justify-between gap-2 p-4"><div><h2 className="font-bold">{p.name}</h2><p className="mt-1 text-xs text-white/45">{p.duration}s · {p.position}</p></div><span className="text-red-400">Editar →</span></div>
@@ -47,10 +47,8 @@ export default function AnimationsPage() {
       </section>
       <aside className="h-fit space-y-5 rounded-2xl border border-white/10 bg-[#111115] p-5 xl:sticky xl:top-6">
         <div><p className="text-xs font-semibold uppercase tracking-widest text-red-400">Editor de efecto</p><h2 className="mt-2 text-xl font-bold">{selected.name}</h2></div>
-        <div key={preview} className="relative flex h-48 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
-          <div className="absolute h-32 w-32 rounded-full opacity-30 blur-3xl" style={{background:selected.color}}/>
-          <span className="relative text-7xl animate-pulse" style={{color:selected.color,textShadow:`0 0 35px ${selected.color}`}}>{symbols[selected.effect]}</span>
-          {selected.showText && <p className="absolute bottom-3 max-w-[90%] truncate text-[10px] font-bold tracking-widest text-white/75">{selected.message}</p>}
+        <div key={preview} className="relative h-56 overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
+          <CinematicEffect preset={{...selected,scale:75}} compact />
         </div>
         <label className="block text-xs text-white/70">Nombre<input className="mt-1 block w-full rounded-lg border border-white/15 bg-black/40 p-3 text-sm text-white" value={selected.name} maxLength={60} onChange={e=>patch({name:e.target.value})}/></label>
         <label className="block text-xs text-white/70">Texto del efecto<input className="mt-1 block w-full rounded-lg border border-white/15 bg-black/40 p-3 text-sm text-white" value={selected.message} maxLength={80} onChange={e=>patch({message:e.target.value})}/></label>
