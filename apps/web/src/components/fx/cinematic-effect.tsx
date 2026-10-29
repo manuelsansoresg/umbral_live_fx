@@ -12,7 +12,7 @@ const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(mi
 
 export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "Regalo de prueba", compact = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [premiumArtFailed, setPremiumArtFailed] = useState(false);
+  const [premiumArtLoaded, setPremiumArtLoaded] = useState(false);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -224,10 +224,10 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
     {preset.effect === "portal" && <div className="fx-portal-core" aria-hidden="true" />}
     {preset.effect === "bloodmoon" && <div className="fx-moon" aria-hidden="true"><span /></div>}
     {preset.effect === "embers" && <div className="fx-ember-storm" aria-hidden="true"><span/><span/><span/><span/><span/></div>}
-    {preset.effect === "wraith" && <div className="fx-wraith" aria-hidden="true">
+    {preset.effect === "wraith" && <div className={`fx-wraith ${premiumArtLoaded ? "fx-wraith-photo-mode" : ""}`} aria-hidden="true">
       <div className="fx-wraith-halo" />
-      {!premiumArtFailed && <img className="fx-wraith-photo" src="/images/fx/umbral-premium-wraith.png" alt="" draggable={false} onError={() => setPremiumArtFailed(true)} />}
-      {premiumArtFailed && <svg className="fx-wraith-art" viewBox="0 0 320 430" width="100%" height="100%" role="presentation">
+      <img className="fx-wraith-photo" src="/images/fx/umbral-premium-wraith.png?v=2" alt="" draggable={false} style={{ opacity: premiumArtLoaded ? 1 : 0 }} onLoad={(event) => setPremiumArtLoaded(event.currentTarget.naturalWidth > 0)} onError={() => setPremiumArtLoaded(false)} />
+      {!premiumArtLoaded && <svg className="fx-wraith-art" viewBox="0 0 320 430" width="100%" height="100%" role="presentation">
         <defs>
           <radialGradient id="umbral-wraith-core" cx="50%" cy="26%" r="78%">
             <stop offset="0%" stopColor="#fbfeff" stopOpacity=".91"/>
@@ -312,8 +312,8 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       .fx-wraith{position:absolute;z-index:4;top:0;left:50%;width:min(60%,410px);height:74%;pointer-events:none;transform:translateX(-50%);animation:wraithRise var(--fx-duration) ease-in-out both}
       .fx-wraith-photo{position:absolute;z-index:2;left:50%;top:1%;width:140%;max-width:none;height:auto;transform:translateX(-50%);object-fit:contain;filter:drop-shadow(0 0 18px #a2d8f155) contrast(1.09);user-select:none;pointer-events:none;animation:wraithPhotoFloat 4.8s ease-in-out infinite alternate}
       .fx-compact .fx-wraith-photo{width:165%;top:-6%;animation:none!important}
-      .fx-wraith:has(.fx-wraith-photo){width:min(84%,650px);height:76%}
-      .fx-compact .fx-wraith:has(.fx-wraith-photo){width:83%;height:86%}
+      .fx-wraith-photo-mode{width:min(84%,650px);height:76%}
+      .fx-compact .fx-wraith-photo-mode{width:83%;height:86%}
       @keyframes wraithPhotoFloat{from{transform:translate(-50%,-9px) scale(.99)}to{transform:translate(-50%,9px) scale(1.04)}}
       .fx-wraith-halo{position:absolute;inset:13% 0 6%;background:radial-gradient(ellipse,#c7ecff55 0%,#9ccdf225 35%,transparent 70%);filter:blur(25px)}
       .fx-wraith-art{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 22px #badfffa0)}
