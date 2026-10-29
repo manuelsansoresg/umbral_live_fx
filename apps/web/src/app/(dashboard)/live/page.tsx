@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { broadcastGift, DEMO_GIFTS, stopPreview } from "@/features/live/simulator";
+import { broadcastGift, DEMO_GIFTS, getRelayChannel, stopPreview } from "@/features/live/simulator";
 import { resolvePreset, useFxSettings } from "@/features/live/settings";
 
 type Format = "horizontal" | "vertical";
@@ -13,6 +13,7 @@ export default function LivePage() {
   const [options,setOptions] = useState<StreamOptions>(defaults);
   const [loaded,setLoaded] = useState(false);
   const [copied,setCopied] = useState(false);
+  const [relayChannel,setRelayChannel] = useState("");
   const [count,setCount] = useState(0);
   const [settings] = useFxSettings();
   useEffect(() => {
@@ -20,6 +21,7 @@ export default function LivePage() {
       const stored = localStorage.getItem(KEY);
       if(stored) setOptions({...defaults,...JSON.parse(stored)});
     } catch { /* Defaults are safe for local preview */ }
+    setRelayChannel(getRelayChannel());
     setLoaded(true);
   }, []);
   function update(patch: Partial<StreamOptions>) {
@@ -27,7 +29,7 @@ export default function LivePage() {
     setOptions(next);
     localStorage.setItem(KEY,JSON.stringify(next));
   }
-  const previewUrl = `/overlay?format=${options.format}`;
+  const previewUrl = `/overlay?format=${options.format}&channel=${encodeURIComponent(relayChannel)}${options.showStatus?"&preview=1":""}`;
   function testGift() {
     if(!options.enabled)return;
     const gift = DEMO_GIFTS[count % DEMO_GIFTS.length];
@@ -45,7 +47,7 @@ export default function LivePage() {
     <header className="border-b border-white/10 pb-7">
       <p className="text-xs font-semibold uppercase tracking-[.3em] text-red-500">UMBRAL FX / LIVE CONTROL</p>
       <h1 className="mt-3 text-4xl font-black sm:text-5xl">Centro de <span className="text-red-500">transmisión.</span></h1>
-      <p className="mt-4 max-w-2xl text-sm leading-7 text-white/60">Prepara tu overlay y prueba los regalos sin iniciar un LIVE. La conexión real a TikTok y OBS todavía está pendiente.</p>
+      <p className="mt-4 max-w-2xl text-sm leading-7 text-white/60">Prepara tu overlay para una fuente de navegador en OBS y prueba regalos desde el panel. La conexión a TikTok sigue pendiente.</p>
     </header>
     <div className="grid gap-4 sm:grid-cols-3">
       <div className="rounded-2xl border border-white/10 bg-white/[.04] p-5"><p className="text-xs uppercase tracking-widest text-white/45">Conexión TikTok</p><p className="mt-3 font-bold text-amber-300">No conectada</p></div>
@@ -77,11 +79,13 @@ export default function LivePage() {
           <button onClick={copyUrl} className="rounded-lg border border-white/20 px-4 py-3 text-sm font-semibold hover:bg-white/10">{copied?"URL copiada ✓":"Copiar URL"}</button>
         </div>
         <p className="break-all rounded-lg bg-black/40 p-3 font-mono text-xs text-white/55">{previewUrl}</p>
+        <p className="text-xs leading-5 text-amber-200/75">La URL contiene un identificador privado del canal. No la compartas públicamente; todavía no existe autenticación de cuentas. Usa el ancho y alto del formato seleccionado al configurar la fuente de navegador.</p>
       </section>
     </div>
+    <section className="rounded-2xl border border-white/10 bg-[#111115] p-6"><h2 className="text-xl font-bold">Conectar en OBS</h2><p className="mt-2 text-sm leading-6 text-white/60">En OBS agrega una fuente «Navegador», pega la URL copiada e indica {options.format === "vertical" ? "1080 × 1920" : "1920 × 1080"}. Ejecuta este Next.js en un servidor Node persistente. Los sonidos de Web Audio pueden requerir habilitar reproducción en la fuente o el entorno de OBS.</p></section>
     <section className="rounded-2xl border border-red-800/30 bg-red-950/10 p-6">
       <h2 className="text-xl font-bold">Mesa de pruebas</h2>
-      <p className="mt-2 text-sm leading-6 text-white/60">Abre el overlay en otra pestaña del mismo navegador antes de enviar un regalo. Los eventos no se reciben en fuentes de navegador externas todavía.</p>
+      <p className="mt-2 text-sm leading-6 text-white/60">Abre la URL del overlay como fuente de navegador en OBS o en otra pestaña. Los eventos simulados viajan por un puente SSE de Next.js; requiere un servidor Node persistente y ambos clientes conectados al mismo servidor.</p>
       <div className="mt-5 flex flex-wrap gap-3">
         <button type="button" disabled={!options.enabled} onClick={testGift} className="rounded-lg bg-red-700 px-5 py-3 text-sm font-bold hover:bg-red-600 disabled:opacity-40">▶ Enviar regalo de prueba</button>
         <button type="button" onClick={stopPreview} className="rounded-lg border border-white/20 px-5 py-3 text-sm font-bold hover:bg-white/10">■ Detener efecto</button>
