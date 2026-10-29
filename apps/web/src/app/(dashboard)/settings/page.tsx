@@ -12,7 +12,7 @@ function validSettings(input: unknown): input is FxSettings {
     typeof p.color === "string" && /^#[0-9a-fA-F]{6}$/.test(p.color) &&
     typeof p.duration === "number" && p.duration >= 2 && p.duration <= 12 &&
     typeof p.scale === "number" && p.scale >= 50 && p.scale <= 150 &&
-    ["embers", "bloodmoon", "apparition", "glitch"].includes(p.effect) &&
+    ["embers", "bloodmoon", "apparition", "glitch", "portal", "fog", "blood", "spectral"].includes(p.effect) &&
     ["terror", "gamer", "fantasy", "premium"].includes(p.theme) &&
     ["top", "center", "bottom"].includes(p.position) &&
     typeof p.message === "string" && typeof p.showText === "boolean"
