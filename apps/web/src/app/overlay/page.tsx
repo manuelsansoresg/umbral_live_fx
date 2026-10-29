@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CinematicEffect } from "@/components/fx/cinematic-effect";
 import { getRelayChannel, isSimulatedGift, LIVE_CHANNEL, type SimulatedGift } from "@/features/live/simulator";
 import { readSettings, resolvePreset } from "@/features/live/settings";
-import { playAudioTest, playEffectSound, stopEffectSound, unlockAudio } from "@/features/live/audio";
+import { playAudioTest, playEffectSound, playUploadedSound, stopEffectSound, unlockAudio } from "@/features/live/audio";
 
 type ActiveEvent = SimulatedGift & { preset: NonNullable<SimulatedGift["preset"]> };
 
@@ -27,9 +27,16 @@ export default function OverlayPage() {
     active.current = true;
     setGift(next);
     if (next.preset.sound) {
-      const volume = typeof next.volume === "number" ? next.volume : readSettings().masterVolume;
-      if (!playEffectSound(next.preset.effect, volume)) setAudioMessage(volume === 0 ? "El volumen general está en 0%." : "Audio bloqueado: pulsa Probar sonido.");
-      else setAudioMessage("");
+      const master = typeof next.volume === "number" ? next.volume : readSettings().masterVolume;
+      const volume = Math.round(master * (next.preset.soundVolume ?? 100) / 100);
+      if (next.preset.soundUrl) {
+        void playUploadedSound(next.preset.soundUrl, volume).then(played => {
+          if (!played) setAudioMessage("No se pudo reproducir el archivo personalizado. Comprueba que siga disponible y que OBS permita audio.");
+          else setAudioMessage("");
+        });
+      } else if (!playEffectSound(next.preset.effect, volume)) {
+        setAudioMessage(volume === 0 ? "El volumen está en 0%." : "Audio bloqueado: prueba el audio en modo debug.");
+      } else setAudioMessage("");
     } else setAudioMessage("El sonido de este efecto está desactivado en Animaciones.");
     timer.current = setTimeout(() => {
       setGift(null);
