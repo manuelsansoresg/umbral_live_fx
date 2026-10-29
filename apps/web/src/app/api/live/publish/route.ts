@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   if (!body || typeof body !== "object") return Response.json({ error: "Datos inválidos" }, { status: 400 });
   const data = body as Record<string, unknown>;
   if (typeof data.channel !== "string" || !validChannel(data.channel)) return Response.json({ error: "Canal inválido" }, { status: 400 });
-  if (data.type === "stop") return Response.json({ delivered: publish(data.channel, { type: "stop" }) });
+  if (data.type === "stop") return Response.json(publish(data.channel, { type: "stop" }));
   if (data.type !== "gift" || !isSimulatedGift(data.gift)) return Response.json({ error: "Regalo inválido" }, { status: 400 });
   if (JSON.stringify(body).length > 12000) return Response.json({ error: "Solicitud demasiado grande" }, { status: 413 });
   const gift = data.gift;
@@ -25,5 +25,5 @@ export async function POST(request: Request) {
     typeof gift.preset.message !== "string" || gift.preset.message.length > 120 ||
     typeof gift.preset.color !== "string" || !/^#[0-9a-fA-F]{6}$/.test(gift.preset.color)
   ))) return Response.json({ error: "Regalo inválido" }, { status: 400 });
-  return Response.json({ delivered: publish(data.channel, { type: "gift", gift }) });
+  return Response.json(publish(data.channel, { type: "gift", gift }));
 }
