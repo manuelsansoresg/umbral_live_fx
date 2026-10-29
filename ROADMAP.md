@@ -26,6 +26,8 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [ ] Cola persistente de efectos, prioridades por regalo, deduplicación y rate limiting de producción.
 - [x] Sonidos sintetizados originales por efecto, interruptor individual y volumen general; audio sincronizado con la cola local.
 - [x] Botón de prueba audible y diagnósticos en overlay y editor; incremento de ganancia en sonidos sintetizados.
+- [x] Sonidos sintéticos más largos y perceptibles (fantasma, niebla, portal, sangre, luna, brasas y glitch) y prueba individual en editor.
+- [ ] Confirmar en OBS que cada preset guardado tiene sonido habilitado y que se escucha desde la fuente de navegador.
 - [ ] Validación de audio dentro de fuentes OBS/TikTok LIVE Studio y volumen independiente por preset.
 
 ## Etapa 2 — Animaciones de calidad comercial
@@ -86,3 +88,10 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 5. Probar detener efectos y recargar la fuente OBS para verificar reconexión.
 6. Probar audio de manera separada: OBS/CEF puede bloquear Web Audio automático.
 7. Este prototipo no funciona con múltiples réplicas del servidor ni con funciones serverless. Para producción usar un broker compartido, autenticación y límites por canal.
+
+### Prueba de audio individual en OBS
+- Actualizar proyecto, reiniciar Next.js y refrescar la fuente Navegador de OBS.
+- Abrir /animations, elegir Fantasma/Aparición espectral y comprobar la casilla de sonido (configuraciones locales antiguas pueden conservarla desactivada).
+- Pulsar «Escuchar sonido de este efecto» en el editor; debe oírse un sonido espectral de ~3 segundos, no tres pitidos.
+- Reproducir el regalo hacia OBS desde el panel y verificar el medidor de la fuente «umbral».
+- Si la fuente recibe eventos pero sigue muda, abrir temporalmente su URL con `&debug=1` y usar «Activar y probar sonido» mediante Interactuar en OBS. El overlay normal continúa limpio.
