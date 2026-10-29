@@ -12,6 +12,7 @@ export default function OverlayPage() {
     let timeout: ReturnType<typeof setTimeout> | undefined;
     setReady(true);
     channel.onmessage = (message: MessageEvent<unknown>) => {
+      if (message.data && typeof message.data === "object" && "type" in message.data && message.data.type === "stop-preview") { if(timeout) clearTimeout(timeout); setGift(null); return; }
       if (!isSimulatedGift(message.data)) return;
       const incoming = message.data;
       const applied = incoming.preset ?? resolvePreset(readSettings(), "unknown");
