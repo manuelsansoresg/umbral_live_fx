@@ -178,7 +178,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
   }, [preset.effect, preset.color, preset.duration, compact]);
 
 
-  return <div className={`fx-stage fx-${preset.effect} ${compact ? "fx-compact" : ""}`} style={{ "--fx-color": preset.color, "--fx-scale": clamp(preset.scale, 50, 150) / 100 } as React.CSSProperties}>
+  return <div className={`fx-stage fx-${preset.effect} ${compact ? "fx-compact" : ""}`} style={{ "--fx-color": preset.color, "--fx-scale": clamp(preset.scale, 50, 150) / 100, "--fx-duration": `${clamp(preset.duration, 2, 12)}s` } as React.CSSProperties}>
     <div className="fx-atmosphere" aria-hidden="true" /><div className="fx-scene-backdrop" aria-hidden="true" />
     <canvas ref={canvasRef} className="fx-canvas" aria-hidden="true" />
     <div className="fx-light" aria-hidden="true" />
@@ -245,13 +245,13 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       .fx-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
       .fx-light{position:absolute;z-index:0;width:67%;aspect-ratio:1;border-radius:100%;background:radial-gradient(circle,var(--fx-color),transparent 70%);opacity:.17;filter:blur(46px);animation:breath 3.4s ease-in-out infinite alternate}
       .fx-figure{position:absolute;z-index:1;top:11%;font-size:clamp(85px,14vw,225px);line-height:1;color:var(--fx-color);filter:drop-shadow(0 0 25px var(--fx-color));animation:manifest .9s cubic-bezier(.2,.85,.3,1) both}
-      .fx-ghost{position:absolute;z-index:3;top:1%;width:min(52%,350px);height:66%;filter:drop-shadow(0 0 19px #bcdfff);animation:ghostManifest 4.6s ease-in-out both;opacity:.9}
+      .fx-ghost{position:absolute;z-index:3;top:1%;width:min(52%,350px);height:66%;filter:drop-shadow(0 0 19px #bcdfff);animation:ghostManifest var(--fx-duration) ease-in-out both;opacity:.9}
       .fx-ghost:before{content:"";position:absolute;inset:9% 8%;border-radius:50%;background:radial-gradient(ellipse,#b2defb24,transparent 68%);filter:blur(20px)}
       .fx-compact .fx-ghost{width:47%;height:64%}
       .fx-portal .fx-figure{display:none}
       .fx-portal-core{position:absolute;top:11%;z-index:1;width:min(38%,300px);aspect-ratio:1;border:2px solid var(--fx-color);border-radius:50%;box-shadow:0 0 44px var(--fx-color),inset 0 0 45px var(--fx-color);animation:slowSpin 11s linear infinite}
       .fx-portal-inner{position:absolute;z-index:1;top:15%;width:min(30%,245px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 50%,#06010c 18%,#180924 47%,var(--fx-color) 86%,transparent 90%);opacity:.85;box-shadow:inset 0 0 44px #04000d,0 0 28px var(--fx-color);animation:portalSurge 3s ease-in-out infinite alternate}
-      .fx-fog-presence{position:absolute;inset:12% 12% 18%;z-index:1;opacity:.55;filter:blur(16px);animation:ghostManifest 5s ease-in-out both}
+      .fx-fog-presence{position:absolute;inset:12% 12% 18%;z-index:1;opacity:.55;filter:blur(16px);animation:ghostManifest var(--fx-duration) ease-in-out both}
       .fx-fog-presence span{position:absolute;bottom:10%;width:21%;height:53%;border-radius:50% 50% 36% 35%;background:linear-gradient(to bottom,transparent,#d4e7ef48,transparent)}
       .fx-fog-presence span:nth-child(1){left:17%;transform:rotate(-12deg)}.fx-fog-presence span:nth-child(2){left:40%;height:73%}.fx-fog-presence span:nth-child(3){left:63%;transform:rotate(14deg)}
       .fx-blood .fx-figure{font-size:clamp(70px,12vw,150px);opacity:.25}
