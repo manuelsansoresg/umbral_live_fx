@@ -42,6 +42,8 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [x] Primer motor reutilizable Canvas + CSS con capas, animaciones responsivas y partículas.
 - [x] Primera versión animada de portales, niebla, sangre y silueta espectral (representaciones estilizadas, no fotorrealistas).
 - [x] Silueta original SVG de fantasma animada como mejora visual inicial.
+- [x] Segunda pasada visual: silueta espectral orgánica, humo multicapa, portal de anillos y partículas, sangre con curvas y destellos glitch, sin agregar dependencias.
+- [x] Entrada cinematográfica del texto, capas visuales y tratamiento de movimiento reducido.
 - [ ] Perfeccionar criaturas y apariciones fotorrealistas mediante recursos gráficos originales y dirección de arte.
 - [ ] Activos con licencias verificadas, precarga y degradación de rendimiento.
 - [ ] Editor avanzado: línea de tiempo, entrada/salida, posición y capas.
@@ -128,3 +130,11 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - Los archivos no están incluidos en la exportación JSON de configuración. Haz una copia aparte de la carpeta si reinstalas o cambias de servidor.
 - El endpoint de descarga utiliza IDs UUID difíciles de adivinar, pero todavía no aplica autorización por usuario; esta opción es solo para el MVP local.
 - El audio del overlay puede ser bloqueado por la política de autoplay de OBS. Conserva el modo `&debug=1` para pruebas manuales.
+
+### Validación visual de la segunda pasada (pendiente de revisión en OBS)
+1. Ejecutar `npm run build` y `npm run dev` después de actualizar main.
+2. Abrir `/animations` y comprobar Fantasma, Portal del abismo, Niebla del cementerio y Lluvia de sangre en las tarjetas y en el editor.
+3. En `/live`, enviar regalos simulados hacia OBS. Confirmar transparencia y que el texto no se recorta en 9:16 y 16:9.
+4. Confirmar que sonidos personalizados continúan funcionando. Este cambio modifica únicamente `cinematic-effect.tsx`, no la lógica del servidor ni los audios.
+5. Medir consumo de CPU/GPU en OBS; las partículas se reducen en las tarjetas y bajo preferencias de movimiento reducido.
+6. La mejora es ilustración procedural estilizada, no personajes fotorrealistas ni video pre-renderizado.
