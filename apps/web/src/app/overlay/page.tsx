@@ -27,7 +27,7 @@ export default function OverlayPage() {
     active.current = true;
     setGift(next);
     if (next.preset.sound) {
-      const volume = readSettings().masterVolume;
+      const volume = typeof next.volume === "number" ? next.volume : readSettings().masterVolume;
       if (!playEffectSound(next.preset.effect, volume)) setAudioMessage(volume === 0 ? "El volumen general está en 0%." : "Audio bloqueado: pulsa Probar sonido.");
       else setAudioMessage("");
     } else setAudioMessage("El sonido de este efecto está desactivado en Animaciones.");
