@@ -20,16 +20,20 @@ Actualizado: 2026-10-28. Estado marcado por funcionalidad real, no solamente por
 - [x] Configuración general: exportar/importar presets y restablecer preferencias locales.
 - [x] Overlay sin indicador de espera mediante parámetro status=0.
 - [ ] Compatibilidad real con fuentes de navegador OBS/TikTok LIVE Studio (el actual BroadcastChannel no alcanza el motor embebido de OBS).
-- [ ] Cola persistente de efectos, prioridades, límite de eventos y rate limiting.
+- [x] Cola de vista previa en memoria con reproducción secuencial y límite de 25 eventos simulados.
+- [ ] Cola persistente de efectos, prioridades por regalo, deduplicación y rate limiting de producción.
 - [ ] Audio sincronizado, volumen general y por preset.
 
 ## Etapa 2 — Animaciones de calidad comercial
-- [ ] Motor reutilizable Canvas/WebGL/CSS con capas.
-- [ ] Aparición realista, niebla, portales, sangre y efectos cinematográficos.
+- [x] Primer motor reutilizable Canvas + CSS con capas, animaciones responsivas y partículas.
+- [x] Primera versión animada de portales, niebla, sangre y silueta espectral (representaciones estilizadas, no fotorrealistas).
+- [ ] Perfeccionar criaturas y apariciones fotorrealistas mediante recursos gráficos originales y dirección de arte.
 - [ ] Activos con licencias verificadas, precarga y degradación de rendimiento.
 - [ ] Editor avanzado: línea de tiempo, entrada/salida, posición y capas.
-- [ ] Previsualización precisa en formatos 16:9 y 9:16.
-- [ ] Accesibilidad: reducción de movimiento y límites de destellos.
+- [x] Previsualización del mismo renderer en tarjetas, editor y overlay.
+- [ ] Validación visual precisa en fuentes 16:9 y 9:16.
+- [x] Respeto básico de la preferencia de movimiento reducido.
+- [ ] Auditoría de accesibilidad y límites de destellos.
 
 ## Etapa 3 — TikTok LIVE (backend separado)
 - [ ] Repositorio backend Node.js, adaptador de eventos e infraestructura de sockets.
