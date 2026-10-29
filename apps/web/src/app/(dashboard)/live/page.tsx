@@ -7,7 +7,7 @@ import { resolvePreset, useFxSettings } from "@/features/live/settings";
 type Format = "horizontal" | "vertical";
 type StreamOptions = { format: Format; showStatus: boolean; enabled: boolean };
 const KEY = "umbral-live-stream-options-v1";
-const defaults: StreamOptions = { format: "vertical", showStatus: true, enabled: true };
+const defaults: StreamOptions = { format: "vertical", showStatus: false, enabled: true };
 
 export default function LivePage() {
   const [options,setOptions] = useState<StreamOptions>(defaults);
@@ -29,7 +29,7 @@ export default function LivePage() {
     setOptions(next);
     localStorage.setItem(KEY,JSON.stringify(next));
   }
-  const previewUrl = `/overlay?format=${options.format}&channel=${encodeURIComponent(relayChannel)}${options.showStatus?"&preview=1":""}`;
+  const previewUrl = `/overlay?format=${options.format}&channel=${encodeURIComponent(relayChannel)}`;
   function testGift() {
     if(!options.enabled)return;
     const gift = DEMO_GIFTS[count % DEMO_GIFTS.length];
@@ -75,7 +75,7 @@ export default function LivePage() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <a href={previewUrl+(options.showStatus?"":"&status=0")} target="_blank" rel="noopener noreferrer" className="rounded-lg bg-red-700 px-4 py-3 text-sm font-bold hover:bg-red-600">Abrir overlay ↗</a>
+          <a href={previewUrl+(options.showStatus?"&preview=1":"")} target="_blank" rel="noopener noreferrer" className="rounded-lg bg-red-700 px-4 py-3 text-sm font-bold hover:bg-red-600">Abrir overlay ↗</a>
           <button onClick={copyUrl} className="rounded-lg border border-white/20 px-4 py-3 text-sm font-semibold hover:bg-white/10">{copied?"URL copiada ✓":"Copiar URL"}</button>
         </div>
         <p className="break-all rounded-lg bg-black/40 p-3 font-mono text-xs text-white/55">{previewUrl}</p>
