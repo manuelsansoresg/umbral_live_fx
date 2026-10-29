@@ -83,7 +83,7 @@ export default function AnimationsPage() {
         <label className="block text-xs text-white/70">Duración: {selected.duration}s<input className="mt-2 w-full accent-red-600" type="range" min="2" max="12" step=".5" value={selected.duration} onChange={e=>patch({duration:Number(e.target.value)})}/></label>
         <label className="block text-xs text-white/70">Tamaño: {selected.scale}%<input className="mt-2 w-full accent-red-600" type="range" min="50" max="150" step="5" value={selected.scale} onChange={e=>patch({scale:Number(e.target.value)})}/></label>
         <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.showText} onChange={e=>patch({showText:e.target.checked})} className="accent-red-600"/> Mostrar texto</label>
-        <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.sound} onChange={e=>patch({sound:e.target.checked})} className="accent-red-600"/> Sonido sintetizado en este efecto</label>
+        <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.sound} onChange={e=>patch({sound:e.target.checked})} className="accent-red-600"/> Activar sonido en este efecto</label>
         <div className="space-y-3 rounded-xl border border-red-900/40 bg-black/30 p-4">
           <p className="text-sm font-bold text-white">Audio personalizado</p>
           <p className="text-xs text-white/50">{selected.soundUrl ? "Archivo propio asignado. Puedes reemplazarlo o volver al sonido original." : "Actualmente usa el sonido sintetizado. Puedes sustituirlo por tu propio audio."}</p>
