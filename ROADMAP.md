@@ -153,3 +153,9 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - [x] Vista previa estática representativa en tarjetas `compact`, animación por duración en overlay.
 - [ ] Verificar `npm run build` y probar el preset en navegador y fuente OBS en el entorno del usuario.
 - [ ] Evaluar calidad visual real contra referencias de terror cinematográfico: el efecto actual sigue siendo ilustración procedural, no un recurso fotorrealista.
+
+### Versión con recurso cinematográfico (2026-10-29)
+- [x] Render `premium-wraith` actualizado para imagen original RGBA con transparencia, sin textos incrustados, y movimiento/partículas sobre la escena.
+- [x] Respaldo automático SVG cuando no existe el archivo PNG, para evitar romper el overlay o el simulador.
+- [ ] **Instalar asset binario** `apps/web/public/images/fx/umbral-premium-wraith.png` desde paquete proporcionado al usuario (el conector GitHub solo permitió actualizar archivos de texto en esta sesión).
+- [ ] Probar compilación, rendimiento de la imagen y transparencia en OBS antes de considerarlo terminado.
