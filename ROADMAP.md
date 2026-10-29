@@ -145,3 +145,11 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - [x] Fantasma sin ojos y boca de caricatura, con silueta y rasgos menos simbólicos; duración visual acompasada al preset.
 - [ ] Validación del build y capturas reales en Safari y fuente OBS.
 - [ ] Dirección artística comercial con assets originales de alta calidad (ilustraciones texturizadas, materiales, humo/niebla compleja), optimización y pruebas de composición; el motor actual sigue siendo procedural y no fotorrealista.
+
+### Primer efecto premium independiente (2026-10-29)
+- [x] `premium-wraith` / `wraith`: aparición espectral premium como preset nuevo en temática Terror, sin sustituir Fantasma ni Visitante espectral.
+- [x] Silueta SVG original, velo y estelas, aura, haz superior, partículas Canvas y animación de entrada/desvanecimiento.
+- [x] Compatibilidad de tipos, validación de eventos, renderizador y sonido sintetizado de respaldo. Permite sonido MP3 propio.
+- [x] Vista previa estática representativa en tarjetas `compact`, animación por duración en overlay.
+- [ ] Verificar `npm run build` y probar el preset en navegador y fuente OBS en el entorno del usuario.
+- [ ] Evaluar calidad visual real contra referencias de terror cinematográfico: el efecto actual sigue siendo ilustración procedural, no un recurso fotorrealista.
