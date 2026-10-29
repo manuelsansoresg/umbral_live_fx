@@ -44,7 +44,7 @@ export default function DashboardPage() {
     </section>
     <footer className="rounded-xl border border-white/10 bg-black/40 p-5 text-sm leading-6 text-white/60">
       {lastGift ? <>Último evento: <strong className="text-white">{lastGift.sender}</strong> envió <strong className="text-red-400">{lastGift.name}</strong>.</> : "Aún no has enviado un regalo de prueba."}
-      <p className="mt-2 text-xs text-white/40">El overlay y este panel deben abrirse en el mismo navegador y origen. La sincronización local no funciona entre dispositivos ni envía datos a TikTok.</p>
+      <p className="mt-2 text-xs text-white/40">El panel también envía pruebas a través del servidor Next.js (SSE), para overlays en fuentes de navegador externas conectadas al mismo servidor persistente. No hay conexión con TikTok.</p>
     </footer>
   </div>;
 }
