@@ -138,3 +138,10 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 4. Confirmar que sonidos personalizados continúan funcionando. Este cambio modifica únicamente `cinematic-effect.tsx`, no la lógica del servidor ni los audios.
 5. Medir consumo de CPU/GPU en OBS; las partículas se reducen en las tarjetas y bajo preferencias de movimiento reducido.
 6. La mejora es ilustración procedural estilizada, no personajes fotorrealistas ni video pre-renderizado.
+
+### Revisión de calidad visual según capturas del usuario (2026-10-29)
+- [x] Corregidas miniaturas en negro: en modo `compact` el renderer fija un fotograma representativo sin ejecutar el desvanecimiento final.
+- [x] Eliminados símbolos genéricos del eclipse, brasas, sangre y glitch; incorporadas composiciones propias mediante CSS/Canvas.
+- [x] Fantasma sin ojos y boca de caricatura, con silueta y rasgos menos simbólicos; duración visual acompasada al preset.
+- [ ] Validación del build y capturas reales en Safari y fuente OBS.
+- [ ] Dirección artística comercial con assets originales de alta calidad (ilustraciones texturizadas, materiales, humo/niebla compleja), optimización y pruebas de composición; el motor actual sigue siendo procedural y no fotorrealista.
