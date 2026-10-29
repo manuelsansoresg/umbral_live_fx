@@ -19,6 +19,7 @@ function validSettings(input: unknown): input is FxSettings {
   ) && typeof value.defaultEffectId === "string" &&
     value.presets.some(p => p.id === value.defaultEffectId) &&
     !!value.assignments && typeof value.assignments === "object" &&
+    (value.masterVolume === undefined || (typeof value.masterVolume === "number" && Number.isFinite(value.masterVolume) && value.masterVolume >= 0 && value.masterVolume <= 100)) &&
     modes.includes(value.mode || "") &&
     ["terror", "gamer", "fantasy", "premium"].includes(value.theme || "");
 }
@@ -51,6 +52,7 @@ export default function SettingsPage() {
     <section className="space-y-4 rounded-2xl border border-white/10 bg-[#111115] p-6">
       <h2 className="text-xl font-bold">Estado actual</h2>
       <div className="grid gap-4 sm:grid-cols-3">{[["Temática",settings.theme],["Modo de regalos",settings.mode],["Presets disponibles",String(settings.presets.length)]].map(([label,value])=><div key={label} className="rounded-xl bg-black/40 p-4"><p className="text-xs text-white/45">{label}</p><p className="mt-2 font-semibold capitalize">{value}</p></div>)}</div>
+      <label className="block text-sm text-white/70">Volumen general: {settings.masterVolume}%<input type="range" min="0" max="100" step="5" value={settings.masterVolume} onChange={event=>save({...settings,masterVolume:Number(event.target.value)})} className="mt-3 block w-full accent-red-600" /></label>
       <p className="text-xs leading-6 text-amber-200/80">Los cambios viven en el almacenamiento local de este navegador. No se sincronizan con otras computadoras ni cuentas.</p>
     </section>
     <section className="space-y-5 rounded-2xl border border-white/10 bg-[#111115] p-6">
