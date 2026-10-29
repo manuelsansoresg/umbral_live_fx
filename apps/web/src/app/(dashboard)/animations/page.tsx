@@ -68,7 +68,7 @@ export default function AnimationsPage() {
         <div className="grid grid-cols-2 gap-2"><button onClick={()=>test(selected)} className="rounded-lg bg-red-700 px-3 py-3 text-sm font-bold hover:bg-red-600">▶ Reproducir</button><button onClick={()=>{stopPreview();stopEffectSound();setPreview(v=>v+1);setNotice("Se detuvo el efecto del overlay.");}} className="rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">■ Detener</button></div>
         <button onClick={duplicate} className="w-full rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">Duplicar efecto</button><button onClick={()=>{save({...settings,defaultEffectId:selected.id});setNotice("Efecto predeterminado actualizado.");}} className="w-full rounded-lg border border-red-600/50 px-3 py-3 text-sm font-semibold text-red-300 hover:bg-red-950/30">Usar como predeterminado</button>
         {notice && <p role="status" className="text-xs text-green-400">{notice}</p>}
-        <p className="text-xs leading-5 text-white/40">La vista previa integrada es simplificada. Para observar el efecto completo, abre el overlay en otra pestaña del mismo navegador.</p>
+        <p className="text-xs leading-5 text-white/40">La vista previa integrada es simplificada. Para observar el efecto completo, abre el overlay en otra pestaña o como fuente de navegador desde Mi transmisión. La conexión SSE requiere un servidor Node persistente.</p>
         <a href="/overlay" target="_blank" rel="noopener noreferrer" className="block text-center text-sm text-red-400 underline underline-offset-4">Abrir overlay ↗</a>
       </aside>
     </div>
