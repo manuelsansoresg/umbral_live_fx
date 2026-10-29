@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { themes, useFxSettings, type EffectPreset, type FxTheme } from "@/features/live/settings";
 import { broadcastGift, stopPreview } from "@/features/live/simulator";
 import { CinematicEffect } from "@/components/fx/cinematic-effect";
-import { playEffectSound, unlockAudio, stopEffectSound } from "@/features/live/audio";
+import { playAudioTest, playEffectSound, unlockAudio, stopEffectSound } from "@/features/live/audio";
 
 
 export default function AnimationsPage() {
@@ -63,7 +63,8 @@ export default function AnimationsPage() {
         <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.showText} onChange={e=>patch({showText:e.target.checked})} className="accent-red-600"/> Mostrar texto</label>
         <label className="flex items-center gap-3 text-sm text-white/70"><input type="checkbox" checked={selected.sound} onChange={e=>patch({sound:e.target.checked})} className="accent-red-600"/> Sonido sintetizado en este efecto</label>
         <label className="block text-xs text-white/70">Volumen general: {settings.masterVolume}%<input className="mt-2 w-full accent-red-600" type="range" min="0" max="100" step="5" value={settings.masterVolume} onChange={e=>save({...settings,masterVolume:Number(e.target.value)})}/></label>
-        <p className="text-xs text-white/40">Sonidos originales generados por el navegador. El overlay requiere habilitar audio con una interacción en esa pestaña.</p>
+        <p className="text-xs text-white/40">Si configuraste efectos antes de añadir audio, revisa que la casilla de sonido esté marcada. El overlay tiene su propio botón de prueba.</p>
+        <button type="button" onClick={async()=>{const ok=await unlockAudio();const test=ok && playAudioTest(80);setNotice(test?"Se envió un sonido de prueba (tres tonos).":"El navegador bloqueó Web Audio.");}} className="w-full rounded-lg border border-white/20 px-3 py-3 text-sm font-semibold hover:bg-white/10">♫ Probar audio de este navegador</button>
         <div className="grid grid-cols-2 gap-2"><button onClick={()=>test(selected)} className="rounded-lg bg-red-700 px-3 py-3 text-sm font-bold hover:bg-red-600">▶ Reproducir</button><button onClick={()=>{stopPreview();stopEffectSound();setPreview(v=>v+1);setNotice("Se detuvo el efecto del overlay.");}} className="rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">■ Detener</button></div>
         <button onClick={duplicate} className="w-full rounded-lg border border-white/20 px-3 py-3 text-sm font-bold hover:bg-white/10">Duplicar efecto</button><button onClick={()=>{save({...settings,defaultEffectId:selected.id});setNotice("Efecto predeterminado actualizado.");}} className="w-full rounded-lg border border-red-600/50 px-3 py-3 text-sm font-semibold text-red-300 hover:bg-red-950/30">Usar como predeterminado</button>
         {notice && <p role="status" className="text-xs text-green-400">{notice}</p>}
