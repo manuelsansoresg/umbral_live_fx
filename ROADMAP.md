@@ -26,7 +26,8 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [ ] Cola persistente de efectos, prioridades por regalo, deduplicación y rate limiting de producción.
 - [x] Sonidos sintetizados originales por efecto, interruptor individual y volumen general; audio sincronizado con la cola local.
 - [x] Botón de prueba audible y diagnósticos en overlay y editor; incremento de ganancia en sonidos sintetizados.
-- [x] Sonidos sintéticos más largos y perceptibles (fantasma, niebla, portal, sangre, luna, brasas y glitch) y prueba individual en editor.
+- [ ] Rediseño de sonidos ambientales: el motor experimental se revirtió tras regresión reportada por el usuario; vuelve el motor previamente funcional.
+- [x] Prueba individual de audio disponible en el editor.
 - [ ] Confirmar en OBS que cada preset guardado tiene sonido habilitado y que se escucha desde la fuente de navegador.
 - [ ] Validación de audio dentro de fuentes OBS/TikTok LIVE Studio y volumen independiente por preset.
 
