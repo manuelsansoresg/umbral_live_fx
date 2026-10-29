@@ -15,6 +15,7 @@ export default function LivePage() {
   const [copied,setCopied] = useState(false);
   const [relayChannel,setRelayChannel] = useState("");
   const [count,setCount] = useState(0);
+  const [relayResult,setRelayResult] = useState("Aún no se ha enviado una prueba.");
   const [settings] = useFxSettings();
   useEffect(() => {
     try {
@@ -30,11 +31,12 @@ export default function LivePage() {
     localStorage.setItem(KEY,JSON.stringify(next));
   }
   const previewUrl = `/overlay?format=${options.format}&channel=${encodeURIComponent(relayChannel)}`;
-  function testGift() {
+  async function testGift() {
     if(!options.enabled)return;
     const gift = DEMO_GIFTS[count % DEMO_GIFTS.length];
     const preset = resolvePreset(settings,gift.id);
-    broadcastGift({id:crypto.randomUUID(),name:gift.name,sender:"UmbralCreepy",effect:preset.effect,preset,timestamp:Date.now()});
+    const result = await broadcastGift({id:crypto.randomUUID(),name:gift.name,sender:"UmbralCreepy",effect:preset.effect,preset,timestamp:Date.now()});
+    setRelayResult("error" in result ? `Error: ${result.error}` : result.connected > 0 ? `Enviado. ${result.connected} overlay(s) conectados al canal.` : "Enviado al servidor, pero no hay overlays conectados por SSE. Revisa la URL en OBS; también puede funcionar la recuperación por consulta.");
     setCount(n=>n+1);
   }
   async function copyUrl() {
@@ -82,10 +84,11 @@ export default function LivePage() {
         <p className="text-xs leading-5 text-amber-200/75">La URL contiene un identificador privado del canal. No la compartas públicamente; todavía no existe autenticación de cuentas. Usa el ancho y alto del formato seleccionado al configurar la fuente de navegador.</p>
       </section>
     </div>
-    <section className="rounded-2xl border border-white/10 bg-[#111115] p-6"><h2 className="text-xl font-bold">Conectar en OBS</h2><p className="mt-2 text-sm leading-6 text-white/60">En OBS agrega una fuente «Navegador», pega la URL copiada e indica {options.format === "vertical" ? "1080 × 1920" : "1920 × 1080"}. Ejecuta este Next.js en un servidor Node persistente. Los sonidos de Web Audio pueden requerir habilitar reproducción en la fuente o el entorno de OBS.</p></section>
+    <section className="rounded-2xl border border-white/10 bg-[#111115] p-6"><h2 className="text-xl font-bold">Conectar en OBS</h2><p className="mt-2 text-sm leading-6 text-white/60">En OBS agrega una fuente «Navegador», pega la URL copiada e indica {options.format === "vertical" ? "1080 × 1920" : "1920 × 1080"}. Si ya tenías una fuente de antes, reemplaza su URL con la nueva URL copiada desde este panel y actualiza la fuente. Ejecuta este Next.js en un servidor Node persistente. Los sonidos de Web Audio pueden requerir habilitar reproducción en la fuente o el entorno de OBS.</p></section>
     <section className="rounded-2xl border border-red-800/30 bg-red-950/10 p-6">
       <h2 className="text-xl font-bold">Mesa de pruebas</h2>
       <p className="mt-2 text-sm leading-6 text-white/60">Abre la URL del overlay como fuente de navegador en OBS o en otra pestaña. Los eventos simulados viajan por un puente SSE de Next.js; requiere un servidor Node persistente y ambos clientes conectados al mismo servidor.</p>
+      <p role="status" className="mt-3 text-sm text-amber-200">{relayResult}</p>
       <div className="mt-5 flex flex-wrap gap-3">
         <button type="button" disabled={!options.enabled} onClick={testGift} className="rounded-lg bg-red-700 px-5 py-3 text-sm font-bold hover:bg-red-600 disabled:opacity-40">▶ Enviar regalo de prueba</button>
         <button type="button" onClick={stopPreview} className="rounded-lg border border-white/20 px-5 py-3 text-sm font-bold hover:bg-white/10">■ Detener efecto</button>
