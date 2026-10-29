@@ -1,6 +1,6 @@
 import type { EffectPreset } from "./settings";
 
-export type GiftEffect = "apparition" | "bloodmoon" | "embers" | "glitch" | "portal" | "fog" | "blood" | "spectral";
+export type GiftEffect = "apparition" | "bloodmoon" | "embers" | "glitch" | "portal" | "fog" | "blood" | "spectral" | "wraith";
 export type SimulatedGift = {
   id: string;
   name: string;
@@ -60,6 +60,6 @@ export function isSimulatedGift(value: unknown): value is SimulatedGift {
   const candidate = value as Partial<SimulatedGift>;
   return typeof candidate.id === "string" && typeof candidate.name === "string" &&
     typeof candidate.sender === "string" && typeof candidate.timestamp === "number" &&
-    ["apparition", "bloodmoon", "embers", "glitch", "portal", "fog", "blood", "spectral"].includes(candidate.effect ?? "") &&
+    ["apparition", "bloodmoon", "embers", "glitch", "portal", "fog", "blood", "spectral", "wraith"].includes(candidate.effect ?? "") &&
     (candidate.volume === undefined || (typeof candidate.volume === "number" && Number.isFinite(candidate.volume) && candidate.volume >= 0 && candidate.volume <= 100));
 }
