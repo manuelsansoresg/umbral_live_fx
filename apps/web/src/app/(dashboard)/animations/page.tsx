@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { themes, useFxSettings, type EffectPreset, type FxTheme } from "@/features/live/settings";
 import { broadcastGift, stopPreview } from "@/features/live/simulator";
 import { CinematicEffect } from "@/components/fx/cinematic-effect";
@@ -14,9 +14,19 @@ export default function AnimationsPage() {
   const [preview, setPreview] = useState(0);
   const [notice, setNotice] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [premiumAssetStatus, setPremiumAssetStatus] = useState<"checking" | "available" | "missing">("checking");
   const fileInput = useRef<HTMLInputElement>(null);
   const selected = settings.presets.find(p => p.id === selectedId) || settings.presets[0];
   const filtered = useMemo(() => settings.presets.filter(p => filter === "all" || p.theme === filter), [settings.presets, filter]);
+  useEffect(() => {
+    if (selected?.effect !== "wraith") return;
+    const controller = new AbortController();
+    setPremiumAssetStatus("checking");
+    fetch("/images/fx/umbral-premium-wraith.png?v=2", { method: "HEAD", cache: "no-store", signal: controller.signal })
+      .then((response) => setPremiumAssetStatus(response.ok && (response.headers.get("content-type") || "").includes("image/png") ? "available" : "missing"))
+      .catch(() => { if (!controller.signal.aborted) setPremiumAssetStatus("missing"); });
+    return () => controller.abort();
+  }, [selected?.effect]);
   const patch = (values: Partial<EffectPreset>) => save({ ...settings, presets: settings.presets.map(p => p.id === selected.id ? { ...p, ...values } : p) });
   const playPreset = async (preset: EffectPreset) => {
     const volume = Math.round(settings.masterVolume * (preset.soundVolume ?? 100) / 100);
@@ -74,6 +84,10 @@ export default function AnimationsPage() {
         <div key={preview} className="relative h-56 overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
           <CinematicEffect preset={{...selected,scale:75}} compact />
         </div>
+        {selected.effect === "wraith" && <div className="rounded-lg border border-white/10 bg-black/40 p-3 text-xs leading-5 text-white/75">
+          <p>{premiumAssetStatus === "checking" ? "Comprobando archivo del espectro…" : premiumAssetStatus === "available" ? "✓ Imagen premium encontrada en este servidor." : "⚠ El servidor actual no encuentra el PNG premium. Aparecerá el dibujo de respaldo."}</p>
+          <a className="mt-1 inline-block text-sky-300 underline underline-offset-4" href="/images/fx/umbral-premium-wraith.png?v=2" target="_blank" rel="noopener noreferrer">Abrir directamente el PNG que sirve Next.js</a>
+        </div>}
         <label className="block text-xs text-white/70">Nombre<input className="mt-1 block w-full rounded-lg border border-white/15 bg-black/40 p-3 text-sm text-white" value={selected.name} maxLength={60} onChange={e=>patch({name:e.target.value})}/></label>
         <label className="block text-xs text-white/70">Texto del efecto<input className="mt-1 block w-full rounded-lg border border-white/15 bg-black/40 p-3 text-sm text-white" value={selected.message} maxLength={80} onChange={e=>patch({message:e.target.value})}/></label>
         <div className="grid grid-cols-2 gap-3">
