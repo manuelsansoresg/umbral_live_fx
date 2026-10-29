@@ -122,7 +122,14 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
     <canvas ref={canvasRef} className="fx-canvas" aria-hidden="true" />
     <div className="fx-light" aria-hidden="true" />
     {preset.effect === "portal" && <div className="fx-portal-core" aria-hidden="true" />}
-    <div className="fx-figure" aria-hidden="true">{glyphs[preset.effect]}</div>
+    {isSpectral ? <div className="fx-ghost" aria-hidden="true">
+      <svg viewBox="0 0 240 300" width="100%" height="100%" role="presentation">
+        <defs><radialGradient id="spectral-fill" cx="50%" cy="30%" r="65%"><stop offset="0%" stopColor="#f8fafc" stopOpacity=".85"/><stop offset="65%" stopColor="#cbd5e1" stopOpacity=".42"/><stop offset="100%" stopColor="#94a3b8" stopOpacity="0"/></radialGradient></defs>
+        <path d="M120 24C73 24 53 68 55 113c2 42-10 55-25 91-12 28-3 46 18 35 25-14 24 33 50 15 20-14 33 30 51 6 13-18 31 8 48-14 23-31-14-77-13-135 1-46-18-87-64-87z" fill="url(#spectral-fill)"/>
+        <ellipse cx="91" cy="124" rx="12" ry="18" fill="#05070c" opacity=".8"/><ellipse cx="149" cy="124" rx="12" ry="18" fill="#05070c" opacity=".8"/>
+        <path d="M116 155q4-13 9 0l7 19q-10 5-20 0z" fill="#080a12" opacity=".65"/>
+      </svg>
+    </div> : <div className="fx-figure" aria-hidden="true">{glyphs[preset.effect]}</div>}
     {preset.showText && <div className="fx-caption"><p className="fx-message">{preset.message}</p><p className="fx-sender">{sender}</p><p className="fx-gift">ha enviado <strong>{giftName}</strong></p></div>}
     <style jsx>{`
       .fx-stage{position:relative;width:100%;height:100%;min-height:180px;overflow:hidden;isolation:isolate;transform:scale(var(--fx-scale));display:grid;place-items:center;color:var(--fx-color);text-align:center}
@@ -130,6 +137,8 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       .fx-light{position:absolute;width:60%;aspect-ratio:1;border-radius:100%;background:radial-gradient(circle,var(--fx-color),transparent 68%);opacity:.23;filter:blur(36px);animation:breath 3s ease-in-out infinite alternate}
       .fx-figure{position:absolute;top:12%;font-size:clamp(90px,15vw,230px);line-height:1;color:var(--fx-color);filter:drop-shadow(0 0 24px var(--fx-color));animation:manifest 1.5s ease-out both}
       .fx-spectral .fx-figure,.fx-apparition .fx-figure,.fx-fog .fx-figure{color:#e6e9ef;opacity:.75;filter:drop-shadow(0 0 30px var(--fx-color));animation:haunt 3s ease-in-out infinite alternate}
+      .fx-ghost{position:absolute;top:6%;width:min(48%,280px);height:57%;filter:drop-shadow(0 0 28px var(--fx-color));animation:haunt 3.5s ease-in-out infinite alternate;opacity:.84}
+      .fx-compact .fx-ghost{width:34%;height:57%}
       .fx-portal .fx-figure{opacity:.32;animation:spin 10s linear infinite}
       .fx-portal-core{position:absolute;top:17%;width:27%;aspect-ratio:1;border:3px solid var(--fx-color);border-radius:50%;box-shadow:0 0 30px var(--fx-color),inset 0 0 30px var(--fx-color);animation:spin 8s linear infinite}
       .fx-blood .fx-figure{font-size:clamp(70px,12vw,150px);opacity:.6}
@@ -146,7 +155,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       @keyframes haunt{from{opacity:.3;transform:translateY(-14px) scale(.95)}to{opacity:.9;transform:translateY(12px) scale(1.05)}}
       @keyframes spin{to{transform:rotate(360deg)}}
       @keyframes interference{0%,100%{transform:translate(0)}25%{transform:translate(-5px,3px)}50%{transform:translate(5px,-4px)}75%{transform:translate(-3px,4px)}}
-      @media(prefers-reduced-motion:reduce){.fx-figure,.fx-caption,.fx-light,.fx-portal-core{animation:none!important}}
+      @media(prefers-reduced-motion:reduce){.fx-figure,.fx-ghost,.fx-caption,.fx-light,.fx-portal-core{animation:none!important}}
     `}</style>
   </div>;
 }
