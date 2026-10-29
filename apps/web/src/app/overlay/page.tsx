@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CinematicEffect } from "@/components/fx/cinematic-effect";
-import { isSimulatedGift, LIVE_CHANNEL, type SimulatedGift } from "@/features/live/simulator";
+import { getRelayChannel, isSimulatedGift, LIVE_CHANNEL, type SimulatedGift } from "@/features/live/simulator";
 import { readSettings, resolvePreset } from "@/features/live/settings";
 import { playAudioTest, playEffectSound, stopEffectSound, unlockAudio } from "@/features/live/audio";
 
@@ -19,6 +19,7 @@ export default function OverlayPage() {
   const active = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nextRef = useRef<() => void>(() => {});
+  const seen = useRef<Set<string>>(new Set());
   nextRef.current = () => {
     const next = queue.current.shift();
     if (!next) { active.current = false; setGift(null); stopEffectSound(); return; }
@@ -41,25 +42,46 @@ export default function OverlayPage() {
     setDebugAudio(params.get("debug") === "1");
     // Try to resume if autoplay is permitted; embedded browsers may still block it.
     void unlockAudio().then(setAudioEnabled);
-    if (!("BroadcastChannel" in window)) return;
-    const channel = new BroadcastChannel(LIVE_CHANNEL);
-    setReady(true);
-    channel.onmessage = (message: MessageEvent<unknown>) => {
-      if (message.data && typeof message.data === "object" && "type" in message.data && message.data.type === "stop-preview") {
-        queue.current = []; active.current = false; stopEffectSound();
-        if (timer.current) clearTimeout(timer.current);
-        setGift(null); return;
-      }
-      if (!isSimulatedGift(message.data)) return;
-      const incoming = message.data;
+    let channel: BroadcastChannel | null = null;
+    const stop = () => {
+      queue.current = []; active.current = false; stopEffectSound();
+      if (timer.current) clearTimeout(timer.current);
+      setGift(null);
+    };
+    const onGift = (incoming: SimulatedGift) => {
+      if (seen.current.has(incoming.id)) return;
+      seen.current.add(incoming.id);
+      if (seen.current.size > 200) seen.current.clear();
       const preset = incoming.preset ?? resolvePreset(readSettings(), "unknown");
       const event: ActiveEvent = { ...incoming, effect: preset.effect, preset };
-      // Prevent the preview from becoming stuck under a burst of events.
       if (queue.current.length >= 25) queue.current.shift();
       queue.current.push(event);
       if (!active.current) nextRef.current();
     };
-    return () => { channel.close(); queue.current = []; stopEffectSound(); if (timer.current) clearTimeout(timer.current); };
+    if ("BroadcastChannel" in window) {
+      channel = new BroadcastChannel(LIVE_CHANNEL);
+      channel.onmessage = (message: MessageEvent<unknown>) => {
+        if (message.data && typeof message.data === "object" && "type" in message.data && message.data.type === "stop-preview") { stop(); return; }
+        if (isSimulatedGift(message.data)) onGift(message.data);
+      };
+    }
+    const relayId = params.get("channel") || getRelayChannel();
+    const source = relayId && /^[a-f0-9-]{36}$/.test(relayId)
+      ? new EventSource(`/api/live/events?channel=${encodeURIComponent(relayId)}`) : null;
+    if (source) {
+      source.onopen = () => setReady(true);
+      source.onmessage = (event: MessageEvent<string>) => {
+        try {
+          const message: unknown = JSON.parse(event.data);
+          if (!message || typeof message !== "object") return;
+          const payload = message as { type?: unknown; gift?: unknown };
+          if (payload.type === "stop") stop();
+          else if (payload.type === "gift" && isSimulatedGift(payload.gift)) onGift(payload.gift);
+        } catch { /* Ignore invalid relay messages */ }
+      };
+      source.onerror = () => setReady(false);
+    }
+    return () => { source?.close(); channel?.close(); queue.current = []; stopEffectSound(); if (timer.current) clearTimeout(timer.current); };
   }, []);
   const placement = gift?.preset.position === "top" ? "flex-start" : gift?.preset.position === "bottom" ? "flex-end" : "center";
   return <main aria-label="Overlay transparente de Umbral LIVE FX" className="pointer-events-none relative flex min-h-dvh items-center justify-center overflow-hidden bg-transparent">
