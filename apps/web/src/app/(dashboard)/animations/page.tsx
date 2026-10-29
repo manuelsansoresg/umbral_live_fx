@@ -82,7 +82,7 @@ export default function AnimationsPage() {
       <aside className="h-fit space-y-5 rounded-2xl border border-white/10 bg-[#111115] p-5 xl:sticky xl:top-6">
         <div><p className="text-xs font-semibold uppercase tracking-widest text-red-400">Editor de efecto</p><h2 className="mt-2 text-xl font-bold">{selected.name}</h2></div>
         <div key={preview} className="relative h-56 overflow-hidden rounded-xl border border-white/10 bg-[#050508]">
-          <CinematicEffect preset={{...selected,scale:75}} compact />
+          <CinematicEffect preset={{...selected,scale:75}} compact={selected.effect !== "wraith"} />
         </div>
         {selected.effect === "wraith" && <div className="rounded-lg border border-white/10 bg-black/40 p-3 text-xs leading-5 text-white/75">
           <p>{premiumAssetStatus === "checking" ? "Comprobando archivo del espectro…" : premiumAssetStatus === "available" ? "✓ Imagen premium encontrada en este servidor." : "⚠ El servidor actual no encuentra el PNG premium. Aparecerá el dibujo de respaldo."}</p>
