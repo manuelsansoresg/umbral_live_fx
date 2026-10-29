@@ -31,6 +31,8 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [ ] Rediseño de sonidos ambientales: el motor experimental se revirtió tras regresión reportada por el usuario; vuelve el motor previamente funcional.
 - [x] Prueba individual de audio disponible en el editor.
 - [ ] Confirmar en OBS que cada preset guardado tiene sonido habilitado y que se escucha desde la fuente de navegador.
+- [x] Corregido el volumen enviado por cada regalo: OBS recibe el nivel del panel aunque tenga almacenamiento local diferente.
+- [x] Tonos graves reajustados a frecuencias audibles dentro del motor Web Audio previamente funcional.
 - [ ] Validación de audio dentro de fuentes OBS/TikTok LIVE Studio y volumen independiente por preset.
 
 ## Etapa 2 — Animaciones de calidad comercial
@@ -106,3 +108,10 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 4. Leer el nuevo diagnóstico bajo «Mesa de pruebas»: distingue error HTTP, ningún overlay conectado por SSE o múltiples conexiones.
 5. Si SSE no funciona, el overlay consulta `/api/live/poll` periódicamente para recuperar mensajes hasta 60 s después.
 6. Si continúa sin animación, probar `/overlay?debug=1` en Safari y verificar el estado del relay; solo entonces revisar los logs del servidor.
+
+### Prueba del ajuste de audio del 29 de octubre
+1. Guardar respaldo de ajustes y verificar que el volumen general sea mayor que 0.
+2. En Animaciones comprobar la casilla de sonido en cada preset, especialmente los más antiguos.
+3. Actualizar el servidor y refrescar la fuente Navegador en OBS.
+4. Probar Fantasma, Corona, Rosa y Corazón desde el dashboard. El volumen ahora viaja dentro del evento y los tonos ya no dependen de subgraves.
+5. Si un efecto sigue sin sonar, usar `/overlay?debug=1` con el mismo parámetro `channel` para distinguir entre bloqueo de Web Audio y preset sin sonido.
