@@ -1,6 +1,6 @@
 # Umbral LIVE FX — plan maestro de desarrollo
 
-Actualizado: 2026-10-28. Estado marcado por funcionalidad real, no solamente por pantalla creada.
+Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por pantalla creada.
 
 ## Etapa 0 — Base existente
 - [x] Next.js (App Router) y estructura de monorepo.
@@ -22,11 +22,13 @@ Actualizado: 2026-10-28. Estado marcado por funcionalidad real, no solamente por
 - [ ] Compatibilidad real con fuentes de navegador OBS/TikTok LIVE Studio (el actual BroadcastChannel no alcanza el motor embebido de OBS).
 - [x] Cola de vista previa en memoria con reproducción secuencial y límite de 25 eventos simulados.
 - [ ] Cola persistente de efectos, prioridades por regalo, deduplicación y rate limiting de producción.
-- [ ] Audio sincronizado, volumen general y por preset.
+- [x] Sonidos sintetizados originales por efecto, interruptor individual y volumen general; audio sincronizado con la cola local.
+- [ ] Validación de audio dentro de fuentes OBS/TikTok LIVE Studio y volumen independiente por preset.
 
 ## Etapa 2 — Animaciones de calidad comercial
 - [x] Primer motor reutilizable Canvas + CSS con capas, animaciones responsivas y partículas.
 - [x] Primera versión animada de portales, niebla, sangre y silueta espectral (representaciones estilizadas, no fotorrealistas).
+- [x] Silueta original SVG de fantasma animada como mejora visual inicial.
 - [ ] Perfeccionar criaturas y apariciones fotorrealistas mediante recursos gráficos originales y dirección de arte.
 - [ ] Activos con licencias verificadas, precarga y degradación de rendimiento.
 - [ ] Editor avanzado: línea de tiempo, entrada/salida, posición y capas.
@@ -56,3 +58,13 @@ Actualizado: 2026-10-28. Estado marcado por funcionalidad real, no solamente por
 - Nada marcado como terminado implica integración con TikTok, OBS, audio o cobros salvo prueba real.
 - No publicar claves ni tokens en el repositorio.
 - Cambios incrementales sobre main y verificación de compilación antes de producción.
+
+## Prueba manual de esta entrega (pendiente de validación)
+1. Ejecutar `npm install && npm run build && npm run dev`.
+2. Abrir `/animations`, activar sonido en un preset, ajustar volumen y pulsar Reproducir.
+3. Abrir `/overlay` en otra pestaña del mismo origen y pulsar «Activar sonido» por restricción del navegador.
+4. Enviar varios regalos consecutivos y comprobar audio/visual secuencial, «Detener» y silencio global a 0%.
+5. Recargar el navegador, comprobar que se conservan volumen y presets antiguos.
+6. Comprobar movimiento reducido del sistema operativo.
+
+Notas: No existe todavía sonido garantizado en OBS ni control de audio en un dispositivo remoto. Los sonidos se generan con osciladores Web Audio y no usan archivos de terceros.
