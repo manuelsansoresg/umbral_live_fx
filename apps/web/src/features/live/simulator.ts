@@ -26,22 +26,24 @@ export function getRelayChannel(): string {
   }
   return channel;
 }
-async function sendToRelay(message: { type: "gift"; gift: SimulatedGift } | { type: "stop" }): Promise<void> {
+export type RelayDelivery = { connected: number; sequence: number } | { error: string };
+async function sendToRelay(message: { type: "gift"; gift: SimulatedGift } | { type: "stop" }): Promise<RelayDelivery> {
   try {
     const channel = getRelayChannel();
-    if (!channel) return;
+    if (!channel) return { error: "Canal no disponible" };
     const result = await fetch("/api/live/publish", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ channel, ...message }) });
-    if (!result.ok) console.warn("Umbral LIVE FX: relay HTTP", result.status);
-  } catch (error) { console.warn("Umbral LIVE FX: relay unavailable, local fallback remains active", error); }
+    if (!result.ok) return { error: `Servidor HTTP ${result.status}` };
+    return await result.json() as RelayDelivery;
+  } catch (error) { console.warn("Umbral LIVE FX: relay unavailable, local fallback remains active", error); return { error: "No se pudo conectar con Next.js" }; }
 }
-export function broadcastGift(gift: SimulatedGift): void {
-  if (typeof window === "undefined") return;
+export function broadcastGift(gift: SimulatedGift): Promise<RelayDelivery> {
+  if (typeof window === "undefined") return Promise.resolve({ error: "Sin ventana" });
   if ("BroadcastChannel" in window) {
     const channel = new BroadcastChannel(LIVE_CHANNEL);
     channel.postMessage(gift);
     channel.close();
   }
-  void sendToRelay({ type: "gift", gift });
+  return sendToRelay({ type: "gift", gift });
 }
 export function stopPreview(): void {
   if (typeof window === "undefined") return;
