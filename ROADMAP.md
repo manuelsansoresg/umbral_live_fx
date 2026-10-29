@@ -175,3 +175,9 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - [x] Vista previa estática de buena visibilidad en tarjetas compactas y respeto a movimiento reducido.
 - [ ] Ejecutar compilación y validar en Safari/OBS que la cara se deforma con naturalidad, sin costuras visibles ni carga excesiva en equipos modestos.
 - [ ] Si se exige movimiento facial fotorrealista, sustituir esta deformación 2D por fotogramas creados a partir de distintos estados reales del rostro o un clip transparente con alfa. Un único PNG no contiene detalles faciales ocultos.
+
+### Grito del espectro premium (2026-10-29)
+- [x] Animación centrada en el rostro: boca parcialmente cerrada al inicio, apertura progresiva de grito y cierre hacia el final.
+- [x] Ambos ojos iluminados en rojo carmesí, con halo y brillo que se intensifican al comenzar el grito.
+- [x] Eliminado movimiento independiente de la mano y las deformaciones asociadas; se conserva imagen de base y niebla ambiental.
+- [ ] Validar visualmente el grito y la ubicación de ambos destellos rojos en la captura real de OBS.
