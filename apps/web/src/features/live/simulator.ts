@@ -1,3 +1,5 @@
+import type { EffectPreset } from "./settings";
+
 export type GiftEffect = "apparition" | "bloodmoon" | "embers" | "glitch";
 export type SimulatedGift = {
   id: string;
@@ -5,6 +7,7 @@ export type SimulatedGift = {
   sender: string;
   effect: GiftEffect;
   timestamp: number;
+  preset?: EffectPreset;
 };
 export const LIVE_CHANNEL = "umbral-live-fx-preview-v1";
 export const DEMO_GIFTS: { id: string; name: string; effect: GiftEffect; symbol: string; description: string }[] = [
