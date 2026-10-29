@@ -16,6 +16,8 @@ export type EffectPreset = {
   showText: boolean;
   message: string;
   sound: boolean;
+  soundUrl?: string;
+  soundVolume?: number;
 };
 export type FxSettings = {
   theme: FxTheme;
