@@ -19,7 +19,7 @@ export default function AnimationsPage() {
   const test = async (preset: EffectPreset) => {
     if (preset.sound && await unlockAudio()) playEffectSound(preset.effect, settings.masterVolume);
     select(preset.id); setPreview(v => v + 1);
-    broadcastGift({ id: crypto.randomUUID(), name: "Regalo de prueba", sender: "UmbralCreepy", effect: preset.effect, timestamp: Date.now(), preset });
+    broadcastGift({ id: crypto.randomUUID(), name: "Regalo de prueba", sender: "UmbralCreepy", effect: preset.effect, timestamp: Date.now(), preset, volume: settings.masterVolume });
   };
   const duplicate = () => {
     const id = `custom-${crypto.randomUUID()}`;
