@@ -26,7 +26,7 @@ function gradientMask(
 }
 
 /** Animates the existing transparent photograph via localized source-image deformation.
- *  Mouth movement is simulated from one still; it is not a synthesized talking face.
+ *  The mouth opens once as a scream and the eyes glow red; no hand movement.
  *  Rendered frames are transparent and keep all user/gift text outside the image. */
 export function PremiumWraithMotion({ compact = false, duration, onAssetStatus }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,27 +46,25 @@ export function PremiumWraithMotion({ compact = false, duration, onAssetStatus }
     mouthLayer.width = W;
     mouthLayer.height = H;
     const mouth = mouthLayer.getContext("2d", { alpha: true });
-    const handLayer = document.createElement("canvas");
-    handLayer.width = W;
-    handLayer.height = H;
-    const hand = handLayer.getContext("2d", { alpha: true });
     const start = performance.now();
     let lastPaint = 0;
 
     const paint = (time: number) => {
-      if (!alive || !mouth || !hand) return;
+      if (!alive || !mouth) return;
       if (time - lastPaint < 1000 / 24 && lastPaint !== 0) {
         raf = requestAnimationFrame(paint);
         return;
       }
       lastPaint = time;
       const seconds = (time - start) / 1000;
-      // 0=almost closed, 1=fully open. Two deliberate scream pulses, not lip-sync.
-      const pulse = (Math.sin(seconds * 2.65 - 0.9) + 1) / 2;
-      const openness = reduced || compact ? 0.86 : 0.16 + Math.pow(pulse, 1.45) * 0.84;
-      const compression = (1 - openness) * 0.57;
-      const sway = reduced || compact ? 0 : Math.sin(seconds * 1.35) * 2.8;
-      const reach = reduced || compact ? 0 : (Math.sin(seconds * 1.6 - 0.3) + 1) / 2;
+      // One deliberate scream: the jaw stays compressed initially, opens
+      // rapidly, then remains open before relaxing near the end.
+      const timeline = Math.min(1, seconds / Math.max(2, duration));
+      const smooth = (x: number) => { const q = Math.max(0, Math.min(1, x)); return q * q * (3 - 2 * q); };
+      const opening = compact || reduced ? 1 :
+        smooth((timeline - 0.13) / 0.23) * (1 - 0.78 * smooth((timeline - 0.83) / 0.16));
+      const compression = (1 - opening) * 0.58;
+      const eyeIntensity = compact || reduced ? 0.72 : 0.3 + 0.7 * smooth((timeline - 0.13) / 0.18);
       const edgeX = (x: number) => Math.exp(-Math.pow((x - 843) / 63, 4));
       const mapY = (x: number, y: number) => {
         const local = Math.exp(-Math.pow((y - 207) / 76, 4));
@@ -95,34 +93,28 @@ export function PremiumWraithMotion({ compact = false, duration, onAssetStatus }
         ctx.drawImage(mouthLayer, 0, 0);
       }
 
-      // Slow foreground-hand reach, isolated from the face, with feathered edges.
-      hand.clearRect(0, 0, W, H);
-      hand.save();
-      const scale = 1 + reach * 0.034;
-      const hx = 515 * S;
-      const hy = 350 * S;
-      hand.translate(hx + sway, hy - reach * 3.5);
-      hand.scale(scale, scale);
-      hand.translate(-hx, -hy);
-      hand.drawImage(img, 0, 0, W, H);
-      hand.restore();
-      hand.globalCompositeOperation = "destination-in";
-      gradientMask(hand, 518 * S, 350 * S, 205 * S, 168 * S);
-      hand.globalCompositeOperation = "source-over";
-      if (!compact && !reduced) ctx.drawImage(handLayer, 0, 0);
-
-      // Eye highlights pulse independently from the source photograph.
-      const glow = compact || reduced ? 0.32 : 0.24 + 0.2 * Math.pow((Math.sin(seconds * 4.5) + 1) / 2, 3);
+      // The original white eye glints become two saturated crimson lights.
+      // Additive halos keep the eyes visible even on dark OBS scenes.
       for (const [eyeX, eyeY] of [[805, 116], [881, 125]] as const) {
-        const x = eyeX * S, y = eyeY * S;
-        const halo = ctx.createRadialGradient(x, y, 0, x, y, 15 * S);
-        halo.addColorStop(0, `rgba(219,246,255,${glow})`);
-        halo.addColorStop(0.28, `rgba(155,215,255,${glow * 0.48})`);
-        halo.addColorStop(1, "rgba(100,190,255,0)");
-        ctx.fillStyle = halo;
+        const x = eyeX * S;
+        const y = eyeY * S;
+        const glow = eyeIntensity * (0.86 + 0.14 * Math.sin(seconds * 5.2));
+        const outer = ctx.createRadialGradient(x, y, 0, x, y, 29 * S);
+        outer.addColorStop(0, `rgba(255,65,65,${Math.min(1, glow)})`);
+        outer.addColorStop(0.18, `rgba(240,14,32,${glow * 0.8})`);
+        outer.addColorStop(0.48, `rgba(215,0,22,${glow * 0.36})`);
+        outer.addColorStop(1, "rgba(130,0,12,0)");
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+        ctx.fillStyle = outer;
         ctx.beginPath();
-        ctx.arc(x, y, 15 * S, 0, Math.PI * 2);
+        ctx.arc(x, y, 29 * S, 0, Math.PI * 2);
         ctx.fill();
+        ctx.fillStyle = `rgba(255,33,35,${Math.min(1, glow * 0.95)})`;
+        ctx.beginPath();
+        ctx.ellipse(x, y, 3.7 * S, 3.2 * S, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
 
       if (!reduced && !compact && seconds < Math.max(2, duration)) raf = requestAnimationFrame(paint);
