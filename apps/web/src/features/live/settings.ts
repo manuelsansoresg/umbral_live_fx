@@ -42,7 +42,7 @@ const presets: EffectPreset[] = [
   { id: "blood-rain", name: "Lluvia de sangre", effect: "blood", theme: "terror", color: "#b91c1c", duration: 6, scale: 100, position: "center", showText: true, message: "LA OSCURIDAD RECLAMA SU OFRENDA", sound: false },
   { id: "spectral-visitor", name: "Visitante espectral", effect: "spectral", theme: "terror", color: "#b8d5e0", duration: 7, scale: 100, position: "center", showText: true, message: "NO ESTÁS SOLO", sound: false },
   { id: "neon", name: "Impacto neón", effect: "glitch", theme: "gamer", color: "#22d3ee", duration: 4, scale: 100, position: "center", showText: true, message: "POWER UP", sound: false },
-  { id: "portal", name: "Portal mágico", effect: "bloodmoon", theme: "fantasy", color: "#a78bfa", duration: 5, scale: 100, position: "center", showText: true, message: "UN PORTAL SE ABRE", sound: false },
+  { id: "portal", name: "Portal mágico", effect: "portal", theme: "fantasy", color: "#a78bfa", duration: 5, scale: 100, position: "center", showText: true, message: "UN PORTAL SE ABRE", sound: false },
   { id: "gold", name: "Destellos dorados", effect: "embers", theme: "premium", color: "#fbbf24", duration: 5, scale: 100, position: "center", showText: true, message: "GRACIAS POR TU REGALO", sound: false },
 ];
 export const defaultSettings: FxSettings = {
