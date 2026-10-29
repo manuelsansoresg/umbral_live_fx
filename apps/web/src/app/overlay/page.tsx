@@ -15,6 +15,7 @@ export default function OverlayPage() {
   const [audioMessage, setAudioMessage] = useState("");
   const [showStatus, setShowStatus] = useState(false);
   const [debugAudio, setDebugAudio] = useState(false);
+  const [relayStatus, setRelayStatus] = useState("Conectando");
   const queue = useRef<ActiveEvent[]>([]);
   const active = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,7 +70,7 @@ export default function OverlayPage() {
     const source = relayId && /^[a-f0-9-]{36}$/.test(relayId)
       ? new EventSource(`/api/live/events?channel=${encodeURIComponent(relayId)}`) : null;
     if (source) {
-      source.onopen = () => setReady(true);
+      source.onopen = () => { setReady(true); setRelayStatus("SSE conectado"); };
       source.onmessage = (event: MessageEvent<string>) => {
         try {
           const message: unknown = JSON.parse(event.data);
@@ -79,9 +80,37 @@ export default function OverlayPage() {
           else if (payload.type === "gift" && isSimulatedGift(payload.gift)) onGift(payload.gift);
         } catch { /* Ignore invalid relay messages */ }
       };
-      source.onerror = () => setReady(false);
+      source.onerror = () => { setReady(false); setRelayStatus("SSE reconectando; consulta de respaldo activa"); };
     }
-    return () => { source?.close(); channel?.close(); queue.current = []; stopEffectSound(); if (timer.current) clearTimeout(timer.current); };
+    let pollCursor = 0;
+    let polling = false;
+    let mounted = true;
+    const poll = async () => {
+      if (!relayId || polling || !mounted) return;
+      polling = true;
+      try {
+        const response = await fetch(`/api/live/poll?channel=${encodeURIComponent(relayId)}&since=${pollCursor}`, { cache: "no-store" });
+        if (!response.ok) throw new Error(String(response.status));
+        const data: unknown = await response.json();
+        if (!mounted || !data || typeof data !== "object") return;
+        const result = data as { sequence?: unknown; events?: unknown };
+        if (Array.isArray(result.events)) {
+          for (const entry of result.events) {
+            if (!entry || typeof entry !== "object") continue;
+            const item = entry as { sequence?: unknown; message?: { type?: unknown; gift?: unknown } };
+            if (typeof item.sequence === "number") pollCursor = Math.max(pollCursor, item.sequence);
+            if (item.message?.type === "stop") stop();
+            else if (item.message?.type === "gift" && isSimulatedGift(item.message.gift)) onGift(item.message.gift);
+          }
+        }
+        if (typeof result.sequence === "number") pollCursor = Math.max(pollCursor, result.sequence);
+      } catch {
+        if (mounted) setRelayStatus("Sin respuesta del servidor de eventos");
+      } finally { polling = false; }
+    };
+    void poll();
+    const interval = window.setInterval(() => void poll(), 1300);
+    return () => { mounted = false; window.clearInterval(interval); source?.close(); channel?.close(); queue.current = []; stopEffectSound(); if (timer.current) clearTimeout(timer.current); };
   }, []);
   const placement = gift?.preset.position === "top" ? "flex-start" : gift?.preset.position === "bottom" ? "flex-end" : "center";
   return <main aria-label="Overlay transparente de Umbral LIVE FX" className="pointer-events-none relative flex min-h-dvh items-center justify-center overflow-hidden bg-transparent">
@@ -92,6 +121,7 @@ export default function OverlayPage() {
         const audible = unlocked && playAudioTest(80);
         setAudioMessage(audible ? "Prueba de tres tonos enviada. Si no suena, revisa el volumen del dispositivo o la pestaña silenciada." : "El navegador no permitió iniciar Web Audio.");
       }} className="rounded-lg border border-white/20 bg-black/80 px-4 py-2 text-xs font-semibold text-white hover:bg-black">{audioEnabled ? "Probar sonido otra vez" : "Activar y probar sonido"}</button>
+      <p className="rounded-lg bg-black/80 p-3 text-right text-xs text-white/80">{relayStatus}</p>
       {audioMessage && <p role="status" className="rounded-lg bg-black/80 p-3 text-right text-xs leading-5 text-white/80">{audioMessage}</p>}
     </div>}
     {!gift && showStatus && <p className="absolute bottom-5 left-5 rounded-md bg-black/60 px-3 py-2 text-xs text-white/70">{ready ? "Overlay listo · esperando regalo simulado" : "El navegador no admite BroadcastChannel"}</p>}
