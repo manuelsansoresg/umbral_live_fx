@@ -273,7 +273,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
         <path d="M117 97Q150 80 180 96" fill="none" stroke="#fff" strokeOpacity=".26" strokeWidth="4"/>
       </svg>
     </div> : preset.effect === "fog" ? <div className="fx-fog-presence" aria-hidden="true"><span/><span/><span/></div> :
-    (preset.effect === "glitch" ? <div className="fx-signal" aria-hidden="true"><span>NO SIGNAL</span><i/><i/><i/></div> : preset.effect === "blood" ? <div className="fx-blood-mark" aria-hidden="true"><span/><span/><span/></div> : <div className="fx-figure" aria-hidden="true">{glyphs[preset.effect]}</div>)}
+    (preset.effect === "wraith" ? null : preset.effect === "glitch" ? <div className="fx-signal" aria-hidden="true"><span>NO SIGNAL</span><i/><i/><i/></div> : preset.effect === "blood" ? <div className="fx-blood-mark" aria-hidden="true"><span/><span/><span/></div> : <div className="fx-figure" aria-hidden="true">{glyphs[preset.effect]}</div>)}
     {preset.effect === "portal" && <div className="fx-portal-inner" aria-hidden="true" />}
     {preset.effect === "blood" && <div className="fx-blood-vignette" aria-hidden="true" />}
     {preset.effect === "glitch" && <div className="fx-glitch-echo" aria-hidden="true">SIGNAL LOST</div>}
