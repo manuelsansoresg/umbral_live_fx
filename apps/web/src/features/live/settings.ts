@@ -43,6 +43,7 @@ const presets: EffectPreset[] = [
   { id: "abyss-portal", name: "Portal del abismo", effect: "portal", theme: "terror", color: "#dc2626", duration: 7, scale: 100, position: "center", showText: true, message: "EL UMBRAL SE HA ABIERTO", sound: true },
   { id: "cemetery-fog", name: "Niebla del cementerio", effect: "fog", theme: "terror", color: "#8893a1", duration: 6, scale: 100, position: "center", showText: true, message: "ALGO SE MUEVE EN LA NIEBLA", sound: true },
   { id: "blood-rain", name: "Lluvia de sangre", effect: "blood", theme: "terror", color: "#b91c1c", duration: 6, scale: 100, position: "center", showText: true, message: "LA OSCURIDAD RECLAMA SU OFRENDA", sound: true },
+  { id: "premium-wraith", name: "Aparición espectral premium", effect: "wraith", theme: "terror", color: "#c7ecff", duration: 7, scale: 100, position: "center", showText: true, message: "UNA PRESENCIA HA CRUZADO EL UMBRAL", sound: true, soundVolume: 100 },
   { id: "spectral-visitor", name: "Visitante espectral", effect: "spectral", theme: "terror", color: "#b8d5e0", duration: 7, scale: 100, position: "center", showText: true, message: "NO ESTÁS SOLO", sound: true },
   { id: "neon", name: "Impacto neón", effect: "glitch", theme: "gamer", color: "#22d3ee", duration: 4, scale: 100, position: "center", showText: true, message: "POWER UP", sound: true },
   { id: "portal", name: "Portal mágico", effect: "portal", theme: "fantasy", color: "#a78bfa", duration: 5, scale: 100, position: "center", showText: true, message: "UN PORTAL SE ABRE", sound: true },
