@@ -19,6 +19,7 @@ export type EffectPreset = {
 };
 export type FxSettings = {
   theme: FxTheme;
+  masterVolume: number;
   mode: "automatic" | "custom";
   defaultEffectId: string;
   assignments: Record<string, string>;
@@ -33,20 +34,20 @@ export const themes: { id: FxTheme; name: string; description: string; color: st
   { id: "premium", name: "Premium", description: "Oro, luces y elegancia", color: "#fbbf24" },
 ];
 const presets: EffectPreset[] = [
-  { id: "embers", name: "Lluvia de brasas", effect: "embers", theme: "terror", color: "#dc2626", duration: 5, scale: 100, position: "center", showText: true, message: "UN ALMA HA CRUZADO EL UMBRAL", sound: false },
-  { id: "bloodmoon", name: "Luna de sangre", effect: "bloodmoon", theme: "terror", color: "#dc2626", duration: 5, scale: 100, position: "center", showText: true, message: "LA LUNA DESPIERTA", sound: false },
-  { id: "apparition", name: "Aparición espectral", effect: "apparition", theme: "terror", color: "#e5e7eb", duration: 5, scale: 100, position: "center", showText: true, message: "ALGUIEN NOS OBSERVA", sound: false },
-  { id: "glitch", name: "Interferencia paranormal", effect: "glitch", theme: "terror", color: "#f87171", duration: 4, scale: 100, position: "center", showText: true, message: "SEÑAL INTERVENIDA", sound: false },
-  { id: "abyss-portal", name: "Portal del abismo", effect: "portal", theme: "terror", color: "#dc2626", duration: 7, scale: 100, position: "center", showText: true, message: "EL UMBRAL SE HA ABIERTO", sound: false },
-  { id: "cemetery-fog", name: "Niebla del cementerio", effect: "fog", theme: "terror", color: "#8893a1", duration: 6, scale: 100, position: "center", showText: true, message: "ALGO SE MUEVE EN LA NIEBLA", sound: false },
-  { id: "blood-rain", name: "Lluvia de sangre", effect: "blood", theme: "terror", color: "#b91c1c", duration: 6, scale: 100, position: "center", showText: true, message: "LA OSCURIDAD RECLAMA SU OFRENDA", sound: false },
-  { id: "spectral-visitor", name: "Visitante espectral", effect: "spectral", theme: "terror", color: "#b8d5e0", duration: 7, scale: 100, position: "center", showText: true, message: "NO ESTÁS SOLO", sound: false },
-  { id: "neon", name: "Impacto neón", effect: "glitch", theme: "gamer", color: "#22d3ee", duration: 4, scale: 100, position: "center", showText: true, message: "POWER UP", sound: false },
-  { id: "portal", name: "Portal mágico", effect: "portal", theme: "fantasy", color: "#a78bfa", duration: 5, scale: 100, position: "center", showText: true, message: "UN PORTAL SE ABRE", sound: false },
-  { id: "gold", name: "Destellos dorados", effect: "embers", theme: "premium", color: "#fbbf24", duration: 5, scale: 100, position: "center", showText: true, message: "GRACIAS POR TU REGALO", sound: false },
+  { id: "embers", name: "Lluvia de brasas", effect: "embers", theme: "terror", color: "#dc2626", duration: 5, scale: 100, position: "center", showText: true, message: "UN ALMA HA CRUZADO EL UMBRAL", sound: true },
+  { id: "bloodmoon", name: "Luna de sangre", effect: "bloodmoon", theme: "terror", color: "#dc2626", duration: 5, scale: 100, position: "center", showText: true, message: "LA LUNA DESPIERTA", sound: true },
+  { id: "apparition", name: "Aparición espectral", effect: "apparition", theme: "terror", color: "#e5e7eb", duration: 5, scale: 100, position: "center", showText: true, message: "ALGUIEN NOS OBSERVA", sound: true },
+  { id: "glitch", name: "Interferencia paranormal", effect: "glitch", theme: "terror", color: "#f87171", duration: 4, scale: 100, position: "center", showText: true, message: "SEÑAL INTERVENIDA", sound: true },
+  { id: "abyss-portal", name: "Portal del abismo", effect: "portal", theme: "terror", color: "#dc2626", duration: 7, scale: 100, position: "center", showText: true, message: "EL UMBRAL SE HA ABIERTO", sound: true },
+  { id: "cemetery-fog", name: "Niebla del cementerio", effect: "fog", theme: "terror", color: "#8893a1", duration: 6, scale: 100, position: "center", showText: true, message: "ALGO SE MUEVE EN LA NIEBLA", sound: true },
+  { id: "blood-rain", name: "Lluvia de sangre", effect: "blood", theme: "terror", color: "#b91c1c", duration: 6, scale: 100, position: "center", showText: true, message: "LA OSCURIDAD RECLAMA SU OFRENDA", sound: true },
+  { id: "spectral-visitor", name: "Visitante espectral", effect: "spectral", theme: "terror", color: "#b8d5e0", duration: 7, scale: 100, position: "center", showText: true, message: "NO ESTÁS SOLO", sound: true },
+  { id: "neon", name: "Impacto neón", effect: "glitch", theme: "gamer", color: "#22d3ee", duration: 4, scale: 100, position: "center", showText: true, message: "POWER UP", sound: true },
+  { id: "portal", name: "Portal mágico", effect: "portal", theme: "fantasy", color: "#a78bfa", duration: 5, scale: 100, position: "center", showText: true, message: "UN PORTAL SE ABRE", sound: true },
+  { id: "gold", name: "Destellos dorados", effect: "embers", theme: "premium", color: "#fbbf24", duration: 5, scale: 100, position: "center", showText: true, message: "GRACIAS POR TU REGALO", sound: true },
 ];
 export const defaultSettings: FxSettings = {
-  theme: "terror", mode: "automatic", defaultEffectId: "embers", presets,
+  theme: "terror", masterVolume: 55, mode: "automatic", defaultEffectId: "embers", presets,
   assignments: Object.fromEntries(DEMO_GIFTS.map((gift) => [gift.id, gift.effect])),
 };
 export function readSettings(): FxSettings {
@@ -56,9 +57,9 @@ export function readSettings(): FxSettings {
     if (!raw) return defaultSettings;
     const value: Partial<FxSettings> = JSON.parse(raw);
     if (!Array.isArray(value.presets) || !value.presets.length) return defaultSettings;
-    const existing = value.presets.filter((p) => typeof p.id === "string" && typeof p.name === "string");
+    const existing = value.presets.filter((p) => typeof p.id === "string" && typeof p.name === "string").map((p) => ({ ...p, sound: typeof p.sound === "boolean" ? p.sound : true }));
     const ids = new Set(existing.map((p) => p.id));
-    return { ...defaultSettings, ...value, presets: [...existing, ...defaultSettings.presets.filter((p) => !ids.has(p.id))], assignments: value.assignments || {} };
+    return { ...defaultSettings, ...value, masterVolume: typeof value.masterVolume === "number" && Number.isFinite(value.masterVolume) ? Math.max(0, Math.min(100, value.masterVolume)) : defaultSettings.masterVolume, presets: [...existing, ...defaultSettings.presets.filter((p) => !ids.has(p.id))], assignments: value.assignments || {} };
   } catch { return defaultSettings; }
 }
 export function writeSettings(value: FxSettings) {
