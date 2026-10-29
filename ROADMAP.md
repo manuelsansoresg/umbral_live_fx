@@ -19,7 +19,9 @@ Actualizado: 2026-10-29. Estado marcado por funcionalidad real, no solamente por
 - [x] Controles de pruebas locales y estado honesto de la conexión.
 - [x] Configuración general: exportar/importar presets y restablecer preferencias locales.
 - [x] Overlay sin indicador de espera mediante parámetro status=0.
-- [ ] Compatibilidad real con fuentes de navegador OBS/TikTok LIVE Studio (el actual BroadcastChannel no alcanza el motor embebido de OBS).
+- [x] Primer puente de pruebas con Server-Sent Events (SSE) para fuentes de navegador en OBS, mismo proceso Node persistente y canal por UUID.
+- [ ] Validar visualmente y comprobar audio en OBS y TikTok LIVE Studio en equipos reales; no es una integración certificada.
+- [ ] Infraestructura de relay para despliegue distribuido (Redis/pubsub) y autenticación por usuario/canal.
 - [x] Cola de vista previa en memoria con reproducción secuencial y límite de 25 eventos simulados.
 - [ ] Cola persistente de efectos, prioridades por regalo, deduplicación y rate limiting de producción.
 - [x] Sonidos sintetizados originales por efecto, interruptor individual y volumen general; audio sincronizado con la cola local.
@@ -75,3 +77,12 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - Si se oyen las notas pero no el efecto, revisar **Sonido sintetizado en este efecto** en /animations y volumen general > 0.
 - Si las notas tampoco suenan, comprobar que la pestaña/sitio/dispositivo no están silenciados; la autorización Web Audio es específica de cada pestaña.
 - La compilación aún debe verificarse localmente; no hubo acceso de red al repositorio desde el entorno de ejecución.
+
+### Prueba de fuente de navegador OBS (pendiente de prueba real)
+1. Ejecutar un único proceso Node con `npm run dev` o `npm run build && npm start`.
+2. Ir a `/live` y copiar la URL del overlay con `channel=<uuid>`; no compartirla públicamente.
+3. Crear una fuente **Navegador** en OBS, con esa URL y resolución 1080×1920 (vertical) o 1920×1080 (horizontal).
+4. Desde `/live`, enviar regalos de prueba; debe activarse la animación en OBS mediante SSE incluso si el panel está en otro navegador.
+5. Probar detener efectos y recargar la fuente OBS para verificar reconexión.
+6. Probar audio de manera separada: OBS/CEF puede bloquear Web Audio automático.
+7. Este prototipo no funciona con múltiples réplicas del servidor ni con funciones serverless. Para producción usar un broker compartido, autenticación y límites por canal.
