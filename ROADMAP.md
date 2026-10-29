@@ -166,3 +166,12 @@ Notas: No existe todavía sonido garantizado en OBS ni control de audio en un di
 - [x] Bust de caché del PNG y sustitución de selector CSS `:has` por clase controlada por estado.
 - [x] Diagnóstico visible en /animations: comprobación de respuesta del propio Next.js y enlace al recurso servido.
 - [ ] Usuario debe sincronizar los cambios GitHub con su checkout local/deploy y refrescar fuente OBS; comprobar que el enlace al PNG responde desde el mismo origen y que el efecto lo muestra.
+
+### Wraith premium v3: animación sin archivo de video (2026-10-29)
+- [x] Motor Canvas de fotogramas transparentes a máximo 24 FPS usando la ilustración original existente.
+- [x] Apertura/cierre simulado de boca mediante deformación local de una malla de píxeles y máscara suave, sin cambiar la imagen base.
+- [x] Leve desplazamiento/enfoque de la mano en primer plano y pulsación de brillo en ambos ojos.
+- [x] Conservados textos dinámicos, transiciones CSS, partículas y sonido personalizado; no se cambió el SSE de OBS.
+- [x] Vista previa estática de buena visibilidad en tarjetas compactas y respeto a movimiento reducido.
+- [ ] Ejecutar compilación y validar en Safari/OBS que la cara se deforma con naturalidad, sin costuras visibles ni carga excesiva en equipos modestos.
+- [ ] Si se exige movimiento facial fotorrealista, sustituir esta deformación 2D por fotogramas creados a partir de distintos estados reales del rostro o un clip transparente con alfa. Un único PNG no contiene detalles faciales ocultos.
