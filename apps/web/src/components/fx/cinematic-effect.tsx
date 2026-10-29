@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { EffectPreset } from "@/features/live/settings";
 
 type Props = { preset: EffectPreset; sender?: string; giftName?: string; compact?: boolean };
@@ -12,6 +12,7 @@ const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(mi
 
 export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "Regalo de prueba", compact = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [premiumArtFailed, setPremiumArtFailed] = useState(false);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -225,7 +226,8 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
     {preset.effect === "embers" && <div className="fx-ember-storm" aria-hidden="true"><span/><span/><span/><span/><span/></div>}
     {preset.effect === "wraith" && <div className="fx-wraith" aria-hidden="true">
       <div className="fx-wraith-halo" />
-      <svg className="fx-wraith-art" viewBox="0 0 320 430" width="100%" height="100%" role="presentation">
+      {!premiumArtFailed && <img className="fx-wraith-photo" src="/images/fx/umbral-premium-wraith.png" alt="" draggable={false} onError={() => setPremiumArtFailed(true)} />}
+      {premiumArtFailed && <svg className="fx-wraith-art" viewBox="0 0 320 430" width="100%" height="100%" role="presentation">
         <defs>
           <radialGradient id="umbral-wraith-core" cx="50%" cy="26%" r="78%">
             <stop offset="0%" stopColor="#fbfeff" stopOpacity=".91"/>
@@ -248,7 +250,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
         <path d="M151 187Q165 179 172 195Q171 217 158 225Q145 218 151 187Z" fill="#07111a" opacity=".69"/>
         <path d="M109 220C128 261 98 314 120 346M165 230C149 281 192 307 175 351M210 224C183 266 228 307 205 346" stroke="#ebf9ff" strokeOpacity=".2" strokeWidth="13" strokeLinecap="round" fill="none"/>
         <path d="M116 96Q160 77 199 99" stroke="#ffffff" strokeOpacity=".26" strokeWidth="3" fill="none"/>
-      </svg>
+      </svg>}
       <div className="fx-wraith-shroud" />
     </div>}
     {(preset.effect === "apparition" || preset.effect === "spectral") ? <div className="fx-ghost" aria-hidden="true">
@@ -308,6 +310,11 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       @keyframes signalJolt{0%,90%,100%{filter:none}92%{filter:brightness(1.8);transform:translateX(calc(-50% + 5px))}95%{transform:translateX(calc(-50% - 5px))}}
       @media(prefers-reduced-motion:reduce){.fx-signal,.fx-ember-storm span{animation:none!important}}
       .fx-wraith{position:absolute;z-index:4;top:0;left:50%;width:min(60%,410px);height:74%;pointer-events:none;transform:translateX(-50%);animation:wraithRise var(--fx-duration) ease-in-out both}
+      .fx-wraith-photo{position:absolute;z-index:2;left:50%;top:1%;width:140%;max-width:none;height:auto;transform:translateX(-50%);object-fit:contain;filter:drop-shadow(0 0 18px #a2d8f155) contrast(1.09);user-select:none;pointer-events:none;animation:wraithPhotoFloat 4.8s ease-in-out infinite alternate}
+      .fx-compact .fx-wraith-photo{width:165%;top:-6%;animation:none!important}
+      .fx-wraith:has(.fx-wraith-photo){width:min(84%,650px);height:76%}
+      .fx-compact .fx-wraith:has(.fx-wraith-photo){width:83%;height:86%}
+      @keyframes wraithPhotoFloat{from{transform:translate(-50%,-9px) scale(.99)}to{transform:translate(-50%,9px) scale(1.04)}}
       .fx-wraith-halo{position:absolute;inset:13% 0 6%;background:radial-gradient(ellipse,#c7ecff55 0%,#9ccdf225 35%,transparent 70%);filter:blur(25px)}
       .fx-wraith-art{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 22px #badfffa0)}
       .fx-wraith-shroud{position:absolute;inset:30% -8% -3%;background:linear-gradient(to bottom,transparent 10%,#c5ebff14 35%,transparent 80%);filter:blur(26px);animation:wraithBreath 3.2s ease-in-out infinite alternate}
@@ -319,7 +326,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       @keyframes wraithRise{0%{opacity:0;filter:blur(22px);transform:translate(-50%,50px) scale(.82)}18%{opacity:.48;filter:blur(12px);transform:translate(-50%,24px) scale(.92)}43%{opacity:.96;filter:blur(1px);transform:translate(-50%,-3px) scale(1)}68%{opacity:1;filter:blur(0);transform:translate(-50%,-10px) scale(1.04)}100%{opacity:0;filter:blur(19px);transform:translate(-50%,-40px) scale(1.09)}}
       @keyframes wraithFloat{from{transform:translateY(-8px)}to{transform:translateY(11px)}}
       @keyframes wraithBreath{from{opacity:.3;transform:scale(.9)}to{opacity:.8;transform:scale(1.13)}}
-      @media(prefers-reduced-motion:reduce){.fx-wraith,.fx-wraith-art,.fx-wraith-shroud{animation:none!important;opacity:1!important;filter:none!important;transform:translateX(-50%)!important}.fx-wraith-art,.fx-wraith-shroud{transform:none!important}}
+      @media(prefers-reduced-motion:reduce){.fx-wraith,.fx-wraith-art,.fx-wraith-photo,.fx-wraith-shroud{animation:none!important;opacity:1!important;filter:none!important;transform:translateX(-50%)!important}.fx-wraith-art,.fx-wraith-shroud{transform:none!important}}
       .fx-stage{position:relative;width:100%;height:100%;min-height:180px;overflow:hidden;isolation:isolate;transform:scale(var(--fx-scale));display:grid;place-items:center;color:var(--fx-color);text-align:center;contain:layout paint}
       .fx-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
       .fx-light{position:absolute;z-index:0;width:67%;aspect-ratio:1;border-radius:100%;background:radial-gradient(circle,var(--fx-color),transparent 70%);opacity:.17;filter:blur(46px);animation:breath 3.4s ease-in-out infinite alternate}
