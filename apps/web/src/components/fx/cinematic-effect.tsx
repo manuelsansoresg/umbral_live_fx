@@ -200,10 +200,11 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
         <path d="M150 28C94 18 70 66 67 118C64 154 48 188 19 257C2 307 42 292 74 283C96 275 94 356 124 324C148 303 166 377 192 329C216 298 234 342 253 299C281 236 234 202 231 127C229 63 205 30 150 28Z" fill="url(#umbral-ghost-veil)" filter="url(#umbral-ghost-blur)"/>
         <path d="M151 35C111 23 89 66 87 118C85 164 70 184 46 250C26 307 82 266 97 281C108 297 108 336 134 301C153 280 168 340 186 305C205 270 222 312 239 277C263 230 208 189 214 124C217 67 189 36 151 35Z" fill="url(#umbral-ghost-body)"/>
         <path d="M119 86Q148 67 181 90M112 160Q153 175 193 158" fill="none" stroke="#fff" strokeOpacity=".23" strokeWidth="4"/>
-        <ellipse cx="120" cy="150" rx="11" ry="19" fill="#07101a" opacity=".9" transform="rotate(-10 120 150)"/>
-        <ellipse cx="180" cy="150" rx="11" ry="19" fill="#07101a" opacity=".9" transform="rotate(10 180 150)"/>
-        <path d="M143 192Q150 178 157 192L162 209Q152 221 139 209Z" fill="#07101a" opacity=".73"/>
-        <path d="M150 240C139 269 170 277 152 300" stroke="#fff" strokeOpacity=".18" fill="none" strokeWidth="10"/>
+        <path d="M104 135Q121 117 136 142Q127 166 113 165Q103 159 104 135Z" fill="#08111d" opacity=".73"/>
+        <path d="M164 142Q179 118 195 136Q199 157 185 164Q170 169 164 142Z" fill="#08111d" opacity=".73"/>
+        <path d="M137 188Q149 179 163 190Q162 216 150 226Q139 215 137 188Z" fill="#090f1a" opacity=".55"/>
+        <path d="M100 208Q132 245 104 287M195 208Q160 249 196 291M150 228Q137 278 152 313" stroke="#eaf6ff" strokeOpacity=".17" fill="none" strokeWidth="13" strokeLinecap="round"/>
+        <path d="M117 97Q150 80 180 96" fill="none" stroke="#fff" strokeOpacity=".26" strokeWidth="4"/>
       </svg>
     </div> : preset.effect === "fog" ? <div className="fx-fog-presence" aria-hidden="true"><span/><span/><span/></div> :
     (preset.effect === "glitch" ? <div className="fx-signal" aria-hidden="true"><span>NO SIGNAL</span><i/><i/><i/></div> : preset.effect === "blood" ? <div className="fx-blood-mark" aria-hidden="true"><span/><span/><span/></div> : <div className="fx-figure" aria-hidden="true">{glyphs[preset.effect]}</div>)}
@@ -222,6 +223,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       .fx-compact .fx-light{animation:none!important;opacity:.25!important;transform:scale(1.08)!important}
       .fx-compact .fx-portal-core,.fx-compact .fx-portal-inner{animation:none!important}
       .fx-compact .fx-figure{animation:none!important;opacity:1}
+      .fx-compact .fx-atmosphere{background:radial-gradient(ellipse at 50% 44%,color-mix(in srgb,var(--fx-color) 23%,transparent),transparent 61%)}
       .fx-moon{position:absolute;top:12%;left:50%;z-index:2;width:min(34%,280px);aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 33% 27%,#f4a3a3 0%,#c74452 19%,#931625 48%,#38060f 80%,#15040a 100%);box-shadow:0 0 42px #cb222966,0 0 95px #c12b322f,inset -19px -12px 35px #200209;border:1px solid #f8a5a542}
       .fx-moon:before{content:"";position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 27% 37%,#15020849 0 9%,transparent 11%),radial-gradient(circle at 67% 61%,#1d050a48 0 12%,transparent 15%),radial-gradient(circle at 51% 27%,#2b041054 0 7%,transparent 9%);mix-blend-mode:multiply}
       .fx-moon span{position:absolute;inset:-12%;border:1px solid #d7424339;border-radius:50%;box-shadow:0 0 25px #c82e3d55}
@@ -246,7 +248,7 @@ export function CinematicEffect({ preset, sender = "UmbralCreepy", giftName = "R
       .fx-ghost{position:absolute;z-index:3;top:1%;width:min(52%,350px);height:66%;filter:drop-shadow(0 0 19px #bcdfff);animation:ghostManifest 4.6s ease-in-out both;opacity:.9}
       .fx-ghost:before{content:"";position:absolute;inset:9% 8%;border-radius:50%;background:radial-gradient(ellipse,#b2defb24,transparent 68%);filter:blur(20px)}
       .fx-compact .fx-ghost{width:47%;height:64%}
-      .fx-portal .fx-figure{opacity:.22;animation:slowSpin 13s linear infinite}
+      .fx-portal .fx-figure{display:none}
       .fx-portal-core{position:absolute;top:11%;z-index:1;width:min(38%,300px);aspect-ratio:1;border:2px solid var(--fx-color);border-radius:50%;box-shadow:0 0 44px var(--fx-color),inset 0 0 45px var(--fx-color);animation:slowSpin 11s linear infinite}
       .fx-portal-inner{position:absolute;z-index:1;top:15%;width:min(30%,245px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 50%,#06010c 18%,#180924 47%,var(--fx-color) 86%,transparent 90%);opacity:.85;box-shadow:inset 0 0 44px #04000d,0 0 28px var(--fx-color);animation:portalSurge 3s ease-in-out infinite alternate}
       .fx-fog-presence{position:absolute;inset:12% 12% 18%;z-index:1;opacity:.55;filter:blur(16px);animation:ghostManifest 5s ease-in-out both}
